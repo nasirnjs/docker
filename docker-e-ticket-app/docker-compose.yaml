@@ -31,9 +31,7 @@ services:
       - "27017:27017"
     volumes:
       - ./my-data/db:/data/db
-      #- ./mongod-init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      #- ./mongod-conf/mongod.conf:/etc/mongod.conf
-    #command: ["mongod", "--config", "/etc/mongod.conf"]
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
   #Mongo-express This is a web-based administrative user interface for MongoDB
   mongo-express:
     image: mongo-express
