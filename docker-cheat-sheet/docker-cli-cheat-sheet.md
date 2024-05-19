@@ -210,23 +210,58 @@ It serves as the starting point from which your application and its dependencies
 Base images are typically pre-configured operating system images with certain tools, libraries, and settings already installed.
 
 **Here's a basic Dockerfile for a Python "Hello, World!" application.**
+`vim app.py`
 
-**Steps 1** Create a `app.py` file and add print("Hello, World!")
+```
+from flask import Flask
+import requests
 
-`echo "print('Hello, World!')" > app.py`
+app = Flask(__name__)
 
-**Steps 2** Create a `Dockerfile` and write Dockerize Python `Hello, World!` application.
-```bash
+@app.route('/')
+def hello_world():
+    return 'Hello, World!!!!!!!! With Docker !!!!!!!!!!!'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
+```
+`vim Dockerfile`
+
+```
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
 # Set the working directory in the container
 WORKDIR /app
-# Copy the current directory contents into the container at /app
+
+# Copy the requirements file first
+COPY requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code into the container
 COPY . /app
-# Run app.py when the container launches
+
+# Expose the application port
+EXPOSE 8000
+
+# Run the application
 CMD ["python", "app.py"]
 ```
-**Steps 3** Build and run docker image.\
+
+`vim requirements.txt`
+
+```
+flask
+requests
+#pandas
+#beautifulsoup4
+```
+Build and run docker image.\
 `docker build -t nasirnjs/hello-python:0.0.1`\
 `docker run nasirnjs/hello-python:001`
 
@@ -291,6 +326,46 @@ Docker CLI configuration settings, including authentication credentials for Dock
 In Docker, images are composed of multiple layers. A docker container image is created using a dockerfile. Every line in a dockerfile will create a layer.\
 If you make changes to your Dockerfile and rebuild the image, Docker can reuse cached layers to speed up the process, only rebuilding the layers affected by the changes.  Caching plays a significant role in optimizing the build process.\
 Let's explore both concepts with examples:
+
+```
+### Docker Image Layers Explanation
+
+1. **Base Image Layer**:
+   - This layer is created when you specify `FROM python:3.8-slim`.
+   - It pulls the official Python 3.8 slim image as the base for your image.
+
+2. **Environment Variables Layer**:
+   - This layer is created by `ENV PYTHONUNBUFFERED=1`.
+   - It sets the `PYTHONUNBUFFERED` environment variable to `1`, ensuring that Python output is unbuffered and immediately printed to stdout.
+
+3. **Working Directory Layer**:
+   - This layer is created by `WORKDIR /app`.
+   - It sets the working directory inside the container to `/app`.
+
+4. **Copy Requirements Layer**:
+   - This layer is created by `COPY requirements.txt /app/`.
+   - It copies the `requirements.txt` file from your host machine into the `/app` directory within the container.
+
+5. **Install Dependencies Layer**:
+   - This layer is created by `RUN pip install --no-cache-dir -r requirements.txt`.
+   - It installs the Python dependencies listed in `requirements.txt` using pip.
+   - If the contents of `requirements.txt` haven't changed since the last build, Docker will reuse the cached layer for this step, improving build performance.
+
+6. **Copy Application Code Layer**:
+   - This layer is created by `COPY . /app`.
+   - It copies the entire contents of your current directory (containing your application code) into the `/app` directory within the container.
+   - If your application code hasn't changed since the last build, Docker will reuse the cached layer for this step, improving build performance.
+
+7. **Expose Port Layer**:
+   - This layer is created by `EXPOSE 8000`.
+   - It exposes port 8000 on the container, allowing external access to the application running inside the container.
+
+8. **Run Application Layer**:
+   - This layer is created by `CMD ["python", "app.py"]`.
+   - It specifies the default command to run when the container starts, which is to execute the `app.py` Python script using the Python interpreter.
+   - This layer defines the entry point for your containerized application.
+
+```
 
 Build Docker Image form [Here](https://github.com/nasirnjs/docker-static-site)
 
