@@ -210,9 +210,10 @@ It serves as the starting point from which your application and its dependencies
 Base images are typically pre-configured operating system images with certain tools, libraries, and settings already installed.
 
 **Here's a basic Dockerfile for a Python "Hello, World!" application.**
+
 `vim app.py`
 
-```
+```bash
 from flask import Flask
 import requests
 
@@ -227,7 +228,7 @@ if __name__ == '__main__':
 ```
 `vim Dockerfile`
 
-```
+```bash
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim
 
@@ -255,7 +256,7 @@ CMD ["python", "app.py"]
 
 `vim requirements.txt`
 
-```
+```bash
 flask
 requests
 #pandas
