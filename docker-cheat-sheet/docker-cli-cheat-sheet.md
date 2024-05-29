@@ -443,7 +443,7 @@ Build and run the docker file.\
 `docker run -it ubuntu-test`
 
 It worked the same as CMD but when we have passed parameters will be see difference.\
-`docker run -it ubuntu-test:latest "Hello from AWS"`
+`docker run -it ubuntu-test:latest 'Hello from AWS'`
 
 *we have passed parameters but the executable hasn’t overridden and also added a new parameter with the old parameter.*
 
