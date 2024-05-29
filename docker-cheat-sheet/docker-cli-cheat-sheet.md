@@ -421,8 +421,8 @@ Build and run the docker file.\
 `docker build -t ubuntu-test .`\
 `docker run -it ubuntu-test`
 
-*Here, we have passed as parameter Hello World for CMD that prints after container start. Here, we overrode the default value with Hi!*
-`docker run -it ubuntu-test echo "Hi!"`
+*Here, we have passed as parameter Hello World for CMD that prints after container start. Here, we overrode the default value with Hi!*\
+`docker run ubuntu-test echo 'Hello Docker'`
 
 *In a Dockerfile, only the last CMD instruction is effective. If there are multiple CMD instructions, the last one will override the previous ones.*
 
