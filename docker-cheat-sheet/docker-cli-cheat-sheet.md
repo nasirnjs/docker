@@ -662,7 +662,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web
 **3. IPvlan Driver Example:**
 
 ```bash
-docker network create -d ipvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o ipvlan_mode=l2 my_ipvlan_net\n
+docker network create -d ipvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o ipvlan_mode=l2 my_ipvlan_net
 docker run --network=my_ipvlan_net -d --name=web-server nginx
 docker ps
 docker inspect 1f9
@@ -686,7 +686,7 @@ docker inspect -f '{{.NetworkSettings.Networks.my_macvlan_network.IPAddress}} {{
 - Creates sub-interfaces with unique MAC and IP addresses.
 - Containers appear as individual devices on the network.
 
-**5. Nll Driver Example:**
+**5. Null Driver Example:**
 
 ```
 docker run --network=none -d --name=web-server nginx
