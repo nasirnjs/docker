@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   mysql_db:
-    image: mysql
+    image: mysql:8.0
     container_name: my-mysql
     restart: always
     environment:
@@ -10,7 +10,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - /my-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
       - ./init-db/init.sql:/docker-entrypoint/init.sql:ro
     ports:
       - "3306:3306"
