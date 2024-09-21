@@ -19,6 +19,13 @@
 8. The correct command to list running containers.\
 `docker container list`\
 *Additionally, using **sudo** might be necessary depending on your system's configuration.*
+9. Remove all unused images (both dangling and unreferenced).\
+`docker image prune -a`
+10. Remove stopped containers and unused networks.\
+`docker system prune`
+11.  Check how much space is being used by Docker images, containers
+`docker system df`
+
  ---
 
 ## Managing Docker Services and Sockets with Systemd
