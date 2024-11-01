@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  master-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: master
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MASTER_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MASTER_MYSQL_USER}
+      MYSQL_PASSWORD: ${MASTER_MYSQL_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${MASTER_MYSQL_ALLOW_EMPTY_PASSWORD}
+    hostname: master-db
+    container_name: master-db
+    ports:
+      - "3300:3306"
+    networks:
+      - replica-net
+    # Uncomment the following line if you want to persist data
+    # volumes:
+    #   - ./master/data:/var/lib/mysql
+
+  read-replica:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: slave
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SLAVE_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${SLAVE_MYSQL_USER}
+      MYSQL_PASSWORD: ${SLAVE_MYSQL_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${SLAVE_MYSQL_ALLOW_EMPTY_PASSWORD}
+    hostname: read-replica
+    container_name: read-replica
+    ports:
+      - "3301:3306"
+    networks:
+      - replica-net
+    depends_on:
+      - master-db
+    # Uncomment the following line if you want to persist data
+    # volumes:
+    #   - ./read-replica/data:/var/lib/mysql
+
+networks:
+  replica-net:
+    name: replica-net
