@@ -96,8 +96,12 @@ WantedBy=multi-user.target
 
 
 ## Step 6: Run and Build Frontend
-Navigate to your frontend project directory and run the following commands:
 
+Install Node Version you can follow this [stesps](https://github.com/nasirnjs/LinuxOpsHub/blob/main/install-node-via-nvode-versionmanager.md#installing-node-using-the-node-version-manager) and Install Angular CLI globally.
+
+`sudo npm install -g @angular/cli`
+
+Navigate to your frontend project directory and run the following commands:
 
 `npm install`
 
