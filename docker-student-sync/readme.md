@@ -99,6 +99,14 @@ WantedBy=multi-user.target
 
 Install Node Version you can follow this [stesps](https://github.com/nasirnjs/LinuxOpsHub/blob/main/install-node-via-nvode-versionmanager.md#installing-node-using-the-node-version-manager) and Install Angular CLI globally.
 
+Installing Node Using the Node Version Manager from [Here](https://github.com/nasirnjs/LinuxOpsHub/blob/main/install-node-via-nvode-versionmanager.md)
+
+`npm i`
+
+`npm run build`
+
+`node --version`
+
 `sudo npm install -g @angular/cli`
 
 Navigate to your frontend project directory and run the following commands:
