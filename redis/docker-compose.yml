@@ -1,0 +1,33 @@
+services:
+  redis-master:
+    image: redis:7-alpine
+    container_name: redis-master
+    networks:
+      - redis-net
+    volumes:
+      - ./master/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis-master-data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+
+  redis-slave:
+    image: redis:7-alpine
+    container_name: redis-slave
+    networks:
+      - redis-net
+    volumes:
+      - ./slave/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis-slave-data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    depends_on:
+      - redis-master
+
+
+networks:
+  redis-net:
+    driver: bridge
+
+volumes:
+  redis-master-data:
+  redis-slave-data:
