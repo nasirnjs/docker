@@ -1,6 +1,6 @@
 services:
   redis-master:
-    image: redis:7-alpine
+    image: redis:8.0.0-alpine
     container_name: redis-master
     networks:
       - redis-net
@@ -12,7 +12,7 @@ services:
       - "6379:6379"
 
   redis-slave:
-    image: redis:7-alpine
+    image: redis:8.0.0-alpine
     container_name: redis-slave
     networks:
       - redis-net
