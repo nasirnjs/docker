@@ -1,0 +1,76 @@
+services:
+  rabbit1:
+    image: rabbitmq:4.1.0-management-alpine
+    container_name: rabbit1
+    hostname: rabbit1
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_NODENAME: rabbit@rabbit1
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq1-lib:/var/lib/rabbitmq/
+      - rabbitmq1-log:/var/log/rabbitmq/
+    networks:
+      - rabbitmq_net
+
+  rabbit2:
+    image: rabbitmq:4.1.0-management-alpine
+    container_name: rabbit2
+    hostname: rabbit2
+    restart: always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_NODENAME: rabbit@rabbit2
+    depends_on:
+      - rabbit1
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq2-lib:/var/lib/rabbitmq/
+      - rabbitmq2-log:/var/log/rabbitmq/
+    networks:
+      - rabbitmq_net
+
+  rabbit3:
+    image: rabbitmq:4.1.0-management-alpine
+    container_name: rabbit3
+    hostname: rabbit3
+    restart: always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_NODENAME: rabbit@rabbit3
+    depends_on:
+      - rabbit1
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq3-lib:/var/lib/rabbitmq/
+      - rabbitmq3-log:/var/log/rabbitmq/
+    networks:
+      - rabbitmq_net
+
+configs:
+  rabbitmq-plugins:
+    content: "[rabbitmq_management]."
+
+volumes:
+  rabbitmq1-lib:
+  rabbitmq1-log:
+  rabbitmq2-lib:
+  rabbitmq2-log:
+  rabbitmq3-lib:
+  rabbitmq3-log:
+
+networks:
+  rabbitmq_net:
+    driver: bridge
