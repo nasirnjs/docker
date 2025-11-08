@@ -11,3 +11,5 @@ Username: admin
 Password: MySecretPass
 
 [References](https://www.youtube.com/watch?v=BZMgchZp008)
+
+[References](https://github.com/obsidiandynamics/kafdrop)
