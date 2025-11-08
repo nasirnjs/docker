@@ -1,0 +1,77 @@
+
+services:
+
+  kafka1:
+    image: confluentinc/cp-kafka:8.10.0
+    container_name: kafka1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_BROKER_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    volumes:
+      - kafka1-data:/var/lib/kafka/data
+
+  kafka2:
+    image: confluentinc/cp-kafka:8.10.0
+    container_name: kafka2
+    ports:
+      - "9094:9092"
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_BROKER_ID: 2
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9094"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    volumes:
+      - kafka2-data:/var/lib/kafka/data
+
+  kafka3:
+    image: confluentinc/cp-kafka:8.10.0
+    container_name: kafka3
+    ports:
+      - "9095:9092"
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_BROKER_ID: 3
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9095"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    volumes:
+      - kafka3-data:/var/lib/kafka/data
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka1:9092,kafka2:9092,kafka3:9092"
+      JVM_OPTS: "-Xms32M -Xmx64M"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+
+volumes:
+  kafka1-data:
+  kafka2-data:
+  kafka3-data:
