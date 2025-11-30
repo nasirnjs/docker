@@ -212,7 +212,6 @@ The lifecycle of a Docker container involves creation, running, stopping, and re
 
 <p align="center"><em>Figure 1: Lifecycle of Docker Container</em></p>
 
-Image: Lifecycle of a Docker container
 
 **Example**
 
@@ -220,19 +219,25 @@ Image: Lifecycle of a Docker container
 Purpose: Creates a new container but does not start it.\
 Example:\
 Creates a new container named "my-container" using the Nginx image but does not start it.\
-`docker create --name my-container nginx`
+```
+docker create --name my-container nginx
+```
 
 2. docker start:\
 Purpose: Starts one or more stopped containers.\
 Example:\
 Starts the container named "my-container" that was previously created but stopped.\
-`docker start my-container`
+```
+docker start my-container
+```
 
 3. docker run:\
 Purpose: Creates and starts a new container in a single command.\
 Example:\
 This command combines the process of creating and starting a container named "my-container" using the Nginx image in a single step.\
-`docker run --name my-container nginx`
+```
+docker run --name my-container nginx
+```
 
 4. docker pause:\
 Purpose: Temporarily pause the processes in the running container.\
@@ -247,13 +252,17 @@ Example:
 Purpose: The docker stop command is used to stop a running container.\
 Example:\
 This command stop a container named "my-container".\
-`docker stop my-container`
+```
+docker stop my-container
+```
 
 6. docker rm:\
 Purpose: The docker rm command is used to remove a container.\
 Example:\
 Want to remove container named "my-container".\
-`docker rm my-container`
+```
+docker rm my-container
+```
 
 ---
 
@@ -263,111 +272,179 @@ Docker containers run as long as the process inside the container is active.\
 Example:
 
 Default Shell Behavior (Container Stops Immediately).\
-`docker run busybox`
+```
+docker run busybox
+```
 
 Run an Interactive Terminal (Container Remains Running).\
-`docker run -it busybox`
+```
+docker run -it busybox
+```
 
 Run a Command to Keep Container Running (e.g., Sleep). In the third example, the sleep 3600 command will keep the container running for 3600 seconds (1 hour), and then it will exit.\
-`docker run busybox sleep 3600`
+```
+docker run busybox sleep 3600
+```
 
 ---
 ## Docker Container Lifecycle
 
 Run a container from an image.\
-`docker run nginx`
+```
+docker run nginx
+```
 
 List running containers.\
-`docker ps`
+```
+docker ps
+```
 
 List all containers (running and stopped).\
-`docker ps -a`
+```
+docker ps -a
+```
 
 Run a command inside a running container.\
-`docker exec my-nginx ls /usr/share/nginx/html`
+```
+docker exec my-nginx ls /usr/share/nginx/html
+```
 
 Display detailed information about a container.\
-`docker inspect my-nginx`
+```
+docker inspect my-nginx
+```
 
 Stop a running container via name or ID.\
-`docker stop my-nginx`
+```
+docker stop my-nginx
+```
 
 stop all running container.\
-`docker container stop $(docker container ps -q)`
+```
+docker container stop $(docker container ps -q)
+```
 
 Start a stopped container vi name or ID.\
-`docker start 24952546f818`
+```
+docker start 24952546f818
+```
 
 Restart a container.\
-`docker restart 24952546f818`
+```
+docker restart 24952546f818
+```
 
 Restart after 30 second.\
-`docker restart -t 30 6d144a1d546b` 
+```
+docker restart -t 30 6d144a1d546b
+``` 
 
 Remove a stopped container.\
-`docker rm 24952546f818`
+```
+docker rm 24952546f818
+```
 
 Remove multiple containers.\
-`docker rm 24952546f818 6d144a1d546b`
+```
+docker rm 24952546f818 6d144a1d546b
+```
 
 Remove all containers.\
-`docker rm $(docker ps -aq)`
+```
+docker rm $(docker ps -aq)
+```
 
 Temporary pause a Docker container.\
-`docker pause  24952546f818`
+```
+docker pause  24952546f818
+```
 
 Unpause a Container.\
-`docker unpause 24952546f818`
+```
+docker unpause 24952546f818
+```
 
 ## Container Naming and Identification:
 Run a container with Name.\
-`docker run --name my-container nginx`
+```
+docker run --name my-container nginx
+```
 
 Rename a container.\
-`docker rename my-nginx new-nginx`
+```
+docker rename my-nginx new-nginx
+```
 
 Get the container ID by its name.\
-`docker inspect --format='{{.Id}}' nginx`
+```
+docker inspect --format='{{.Id}}' nginx
+```
 
 
 ## Container Logs and Stats:
 Display the logs of a container.\
-`docker logs <containerID>`
+```
+docker logs <containerID>
+```
 
 Display a live stream of container resource usage statistics.\
-`docker stats <containerID>`
+```
+docker stats <containerID>
+```
 
 Check specific container log runtime.\
-`docker exec 266 cat /var/log/nginx/access.log`
+```
+docker exec 266 cat /var/log/nginx/access.log
+```
 
 ## Container Interaction:
 Attach to a running container (not recommended for long-term use).\
-`docker attach <containerID>`
+```
+docker attach <containerID>
+```
 
 Run an interactive shell inside a container.\
-`docker container exec -it b71f15d33b60 /bin/bash`\
-`docker container run -it ubuntu`
+```
+docker container exec -it b71f15d33b60 /bin/bash
+```
+```
+docker container run -it ubuntu
+```
 
 Check container host Name.\
-`docker container exec b71f15d hostname`	
+```
+docker container exec b71f15d hostname
+```	
 
  Single container list of the running processes without logging.\
-`docker container top nginx`
+```
+docker container top nginx
+```
 
 Multiple containers stats by name and ID.\
-`docker container stats nginx 5ac4`	
+```
+docker container stats nginx 5ac4
+```	
 
 Inspecting Container Information.\
-`docker inspect <container_id_or_name>`
+```
+docker inspect <container_id_or_name>
+```
 
 Copy from container to host.\
-`docker cp <container_id_or_name>:<container_path> <host_path>`
+```
+docker cp <container_id_or_name>:<container_path> <host_path>
+```
 
 Copy from host to container.\
-`docker cp <host_path> <container_id_or_name>:<container_path>`
+```
+docker cp <host_path> <container_id_or_name>:<container_path>
+```
 
 Remove all stopped containers.\
-`docker container prune`
+```
+docker container prune
+```
 
 ## Build a simple Docker Image
 
@@ -424,7 +501,9 @@ EXPOSE 8000
 CMD ["python", "app.py"]
 ```
 
-`vim requirements.txt`
+```
+vim requirements.txt
+```
 
 ```bash
 flask
@@ -433,32 +512,51 @@ requests
 #beautifulsoup4
 ```
 Build and run docker image.\
-`docker build -t nasirnjs/hello-python:0.0.1`\
-`docker run nasirnjs/hello-python:001`
+```
+docker build -t nasirnjs/hello-python:0.0.1
+```
+
+```
+docker run nasirnjs/hello-python:001
+```
 
 ## Docker Images and Tag:
 List of all image.\
-`docker image ls`
+```
+docker image ls
+```
 
 Pull an image from a registry.\
-`docker pull nginx`
+```
+docker pull nginx
+```
 
 Show detailed information about an image.\
-`docker image inspect nginx`
+```
+docker image inspect nginx
+```
 
 <img src="image/docker-image-tag.png" alt="Docker Image Taging explaination" width="800"/>
 
 Tag the existing Image with the New Name.\
-`docker tag old-image:old-tag new-image:new-tag`
+```
+docker tag old-image:old-tag new-image:new-tag
+```
 
 Remove an image.\
-`docker image rm my-image:tag`
+```
+docker image rm my-image:tag
+```
 
 Remove all unused images.\
-`docker image prune -a`
+```
+docker image prune -a
+```
 
 Remove all images.\
-`docker rmi $(docker images -q)`
+```
+docker rmi $(docker images -q)
+```
 
 ## Authenticating to Registries
 Docker and containerization, a registry is a service that stores and distributes Docker images. Docker images can be stored in public or private registries.\
@@ -475,22 +573,34 @@ Here's an overview of public and private registries:
 - Use Cases: Storing proprietary or sensitive images, access control.
 
 Log in to Docker Hub.\
-`docker login`
+```
+docker login
+```
 
 Check local Docker images list.\
-`docker image list`
+```
+docker image list
+```
 
 Push Docker Image to Dockerhub Private Repo.\
-`docker push nasirnjs:hello-python:001`
+```
+docker push nasirnjs:hello-python:001
+```
 
 Log in to a Private Registry.\
-`docker login registry.example.com`
+```
+docker login registry.example.com
+```
 
 Docker CLI configuration settings, including authentication credentials for Docker registries.\
-`cat ~/.docker/config.json `
+```
+cat ~/.docker/config.json 
+```
 
  Display information about disk usage related to Docker.\
- `docker system df`
+ ```
+ docker system df
+ ```
 
 
 ## Docker Image Layer
@@ -541,28 +651,40 @@ Let's explore both concepts with examples:
 Build Docker Image form [Here](https://github.com/nasirnjs/docker-static-site)
 
 list of `nginx` image layer.\
-`docker image inspect nginx -f '{{.RootFS.Layers}}' | awk -F' ' '{for (i=1; i<=NF; i++) print $i}'`
+```
+docker image inspect nginx -f '{{.RootFS.Layers}}' | awk -F' ' '{for (i=1; i<=NF; i++) print $i}'
+```
 
 **Install Dive**
 The dive is a command line tool for analyzing a Docker image. This tool shows image contents broken down by layer. It can used to explore image structure in order to minimize size of Docker image. [Reference](https://github.com/wagoodman/dive)
 
 Install dive on Ubuntu
-`sudo snap install dive`
+```
+sudo snap install dive
+```
 
 Uninstall dive
-`sudo apt purge --autoremove -y dive`
+```
+sudo apt purge --autoremove -y dive
+```
 
 
 ## Publishing Ports:
 
 Publishing a Port.\
-`docker run -d -p <host_port>:<container_port> --name my_container my_image`
+```
+docker run -d -p <host_port>:<container_port> --name my_container my_image
+```
 
 Publish all exposed ports to random ports on the host.\
-`docker run -d -P --name web_server nginx`
+```
+docker run -d -P --name web_server nginx
+```
 
 To see the actual mappings, you can use.\
-`docker port my_container`
+```
+docker port my_container
+```
 
 
 ##  Difference between CMD vs ENTRYPOINT Docker!
@@ -608,12 +730,18 @@ RUN apt-get update
 ENTRYPOINT ["echo", "Hello Google"]
 ```
 Build and run the docker file.\
-`docker build -t ubuntu-test .`
-\
-`docker run -it ubuntu-test`
+```
+docker build -t ubuntu-test .
+```
+
+```
+docker run -it ubuntu-test
+```
 
 It worked the same as CMD but when we have passed parameters will be see difference.\
-`docker run -it ubuntu-test:latest 'Hello from AWS'`
+```
+docker run -it ubuntu-test:latest 'Hello from AWS'
+```
 
 *we have passed parameters but the executable hasn’t overridden and also added a new parameter with the old parameter.*
 
@@ -627,13 +755,19 @@ ENTRYPOINT ["echo", "Hello"]
 CMD ["Google World"]
 ```
 Build a new image from the modified Dockerfile and run a container.\
-`docker build -t ubuntu-test .`
-`docker run -it ubuntu-test:latest`
+```
+docker build -t ubuntu-test .
+```
+```
+docker run -it ubuntu-test:latest
+```
 
 *It will print the message `Hello Google World` message*
 
 Let's pass parameters to the docker run command.\
-`docker run -it ubuntu-test  Bangladesh`
+```
+docker run -it ubuntu-test  Bangladesh
+```
 
 *The output has now changed to `Hello Bangladesh`*\
 
@@ -686,19 +820,29 @@ Docker volumes are used to persist data generated by and used by Docker containe
 Here are some common Docker volume-related commands with examples:
 
 List of Docker Volume.\
-`docker volume ls`
+```
+docker volume ls
+```
 
 Create Docker volume.\
-`docker volume create my_volume`
+```
+docker volume create my_volume
+```
 
 List of Docker Volume.\
-`docker volume ls`
+```
+docker volume ls
+```
 
 Inspect a Volume.\
-`docker volume inspect my_volume`
+```
+docker volume inspect my_volume
+```
 
 Remove a Volume.\
-`docker volume rm my_volume`
+```
+docker volume rm my_volume
+```
 
 Create Nginx volume and run Nginx Pod with attached volume inside of Nginx Pod.\
 ```bash
@@ -760,7 +904,9 @@ docker inspect --format '{{.State.Pid}}' web
 ```
 Network Namespace:\
 Let's use the example command you provided to check the PID and Network Namespace of the running Docker container.\
-`docker inspect --format '{{.NetworkSettings.SandboxKey}}' web`
+```
+docker inspect --format '{{.NetworkSettings.SandboxKey}}' web
+```
 
 
 ## Docker Cgroups
