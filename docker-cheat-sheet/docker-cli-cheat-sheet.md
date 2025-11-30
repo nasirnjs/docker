@@ -205,7 +205,7 @@ The lifecycle of a Docker container involves creation, running, stopping, and re
 <!-- Centered image with width and height -->
 
 <p align="center">
-  <img src="image/Container_life.png" alt="Lifecycle of Docker Container" width="700" height="300">
+  <img src="image/Container_life.png" alt="Lifecycle of Docker Container" width="700" height="400">
 </p>
 
 <!-- Optional caption -->
