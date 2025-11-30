@@ -2,29 +2,142 @@
 
 ## Let’s try some basic command 
 
-1. This command is used to check the installed Docker version on your system.\
-`sudo docker version`
-2. Display system-wide information.\
-`sudo docker info`
-3. This command checks the status of the Docker service using systemd.\
-`sudo systemctl status docker`
-4. This command displays a list of currently running Docker containers.\
-`sudo docker ps`
-5. This command shows all containers, including those that are not currently running.\
-`sudo docker ps -a`
-6. This command lists all the Docker images that are available on your system.\
-`sudo docker images`
-7. This command pulls the latest version of the Nginx.\
-`sudo docker run nginx`
-8. The correct command to list running containers.\
-`docker container list`\
-*Additionally, using **sudo** might be necessary depending on your system's configuration.*
-9. Remove all unused images (both dangling and unreferenced).\
-`docker image prune -a`
-10. Remove stopped containers and unused networks.\
-`docker system prune`
-11.  Check how much space is being used by Docker images, containers
-`docker system df`
+## 🚀 Basic Docker Commands Cheat Sheet 🚀
+
+1. Check Docker version
+
+```bash
+docker version
+```
+2. Display system-wide Docker information
+
+```bash
+docker info
+```
+
+3. Check Docker service status (systemd)
+
+```bash
+systemctl status docker
+```
+
+4. List currently running containers
+
+```bash
+docker ps
+```
+
+5. List all containers (including stopped)
+
+```bash
+docker ps -a
+```
+
+6. List all Docker images
+
+```bash
+docker images
+```
+
+7. Pull and run the latest Nginx container
+
+```bash
+docker run nginx
+```
+
+8. List running containers (long form)
+
+```bash
+docker container ls
+```
+
+9. Remove all unused images (dangling and unreferenced)
+
+```bash
+docker image prune -a
+```
+
+10. Remove stopped containers and unused networks
+
+```bash
+docker system prune
+```
+
+11. Check Docker disk usage
+
+```bash
+docker system df
+```
+
+12. Pull an image without running it
+
+```bash
+docker pull nginx
+```
+
+13. Run a container in detached mode (background)
+
+```bash
+docker run -d nginx
+```
+
+14. Run a container with a custom name
+
+```bash
+docker run -d --name mynginx nginx
+```
+
+15. Stop a running container
+
+```bash
+docker stop <container_id>
+```
+
+16. Start a stopped container
+
+```bash
+docker start <container_id>
+```
+
+17. Remove a container
+
+```bash
+docker rm <container_id>
+```
+
+18. Remove an image
+
+```bash
+docker rmi <image_name>
+```
+
+19. Stop all running containers
+```
+docker stop $(docker ps -q)
+```
+20. Remove all containers (stopped and running)
+```
+docker rm $(docker ps -aq)
+```
+21. View logs of a container
+
+```bash
+docker logs <container_id>
+```
+
+22. Enter inside a running container (interactive shell)
+
+```bash
+docker exec -it <container_id> bash
+```
+
+*Use `sh` if bash is not available.*
+
+23. Monitor container resource usage in real-time
+
+```bash
+docker stats
+```
 
  ---
 
