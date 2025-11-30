@@ -1,5 +1,36 @@
 # 🚀Docker Cheat Sheet/CLI Commands🚀
 
+**Virtualization:** Each VM runs a full OS with its own kernel and drivers via a hypervisor (VMware, Hyper-V, KVM). Heavy but fully isolated; VMs take minutes to start.
+
+**Containerization:** Containers share the host OS kernel, running isolated processes with their own filesystem. Lightweight and fast, starting in milliseconds. All containers must match the host kernel (e.g., Linux containers on Linux).
+
+
+<!-- Centered image with width and height -->
+
+<p align="center">
+  <img src="image/vm-container.png" alt="Virtualization vs. Containerization" width="400" height="500">
+</p>
+
+<!-- Optional caption -->
+
+<p align="center"><em>Figure 1: Virtualization vs. Containerization</em></p>
+
+
+
+
+| Feature            | Virtualization (VMs)                                                            | Containerization (Docker, Podman)                                                                 |
+| ------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Definition**     | Running multiple virtual machines on a single physical host using a hypervisor. | Running multiple containers sharing the same OS kernel on a single host using a container engine. |
+| **Isolation**      | Full isolation with separate OS for each VM.                                    | Process-level isolation using namespaces and cgroups, sharing the host OS kernel.                 |
+| **Resource Usage** | Heavy, because each VM includes a full OS.                                      | Lightweight, containers only include the application and dependencies.                            |
+| **Startup Time**   | Slow, minutes to boot an OS.                                                    | Fast, seconds to start a container.                                                               |
+| **Portability**    | VMs are less portable, depend on hypervisor compatibility.                      | Containers are highly portable: “Build once, run anywhere”.                                       |
+| **Performance**    | Slightly lower, due to full OS overhead.                                        | Near-native performance, minimal overhead.                                                        |
+| **Size**           | Large (GBs per VM)                                                              | Small (MBs per container)                                                                         |
+| **Use Case**       | Running multiple OS types, legacy applications, full OS isolation.              | Microservices, CI/CD pipelines, cloud-native applications.                                        |
+| **Management**     | Requires hypervisor management, OS updates, and patching per VM.                | Easier to manage, simpler to deploy and scale applications.                                       |
+
+
 ## Let’s try some basic command 
 
 ## 🚀 Basic Docker Commands Cheat Sheet 🚀
@@ -145,16 +176,26 @@ docker stats
 
 Docker service can still be activated through the Docker socket (`docker.socket`) even if you stop the Docker service (`docker.service`). The Docker socket allows communication with the Docker daemon and is used for Docker API access.
 
-1. This command checks the status of the Docker service.\
-`sudo systemctl status docker`
-2. This command stops the Docker service.\
-`sudo systemctl stop docker`
-3. This command checks the status of the Docker service again.\
-`sudo systemctl status docker`
-4. This command stops the Docker socket.\
-`sudo systemctl stop docker.socket`
-5. This command checks the status of the Docker service once again.\
-`sudo systemctl status docker`
+1. This command checks the status of the Docker service.
+```
+sudo systemctl status docker
+```
+2. This command stops the Docker service.
+```
+sudo systemctl stop docker
+```
+3. This command checks the status of the Docker service again.
+```
+sudo systemctl status docker
+```
+4. This command stops the Docker socket.
+```
+sudo systemctl stop docker.socket
+```
+5. This command checks the status of the Docker service once again.
+```
+sudo systemctl status docker
+```
 ---
 
 ## The lifecycle of a Docker container
