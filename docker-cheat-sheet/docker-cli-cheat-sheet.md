@@ -201,7 +201,16 @@ sudo systemctl status docker
 ## The lifecycle of a Docker container
 The lifecycle of a Docker container involves creation, running, stopping, and removal. Containers are created from Docker images, run as isolated instances, can be stopped or paused, and can be removed when no longer needed.
 
-<img src="image/Container_life.png" alt="Lifecycle of Docker Container" width="800"/>
+
+<!-- Centered image with width and height -->
+
+<p align="center">
+  <img src="image/Container_life.png" alt="Lifecycle of Docker Container" width="700" height="300">
+</p>
+
+<!-- Optional caption -->
+
+<p align="center"><em>Figure 1: Lifecycle of Docker Container</em></p>
 
 Image: Lifecycle of a Docker container
 
