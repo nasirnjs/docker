@@ -586,7 +586,7 @@ requests
 ```
 Build and run docker image.
 ```
-docker build -t nasirnjs/hello-python:0.0.1
+docker build -t nasirnjs/hello-python:0.0.1 .
 ```
 
 ```
