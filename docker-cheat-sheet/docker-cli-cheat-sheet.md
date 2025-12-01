@@ -533,6 +533,17 @@ def default_user():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
 ```
+```
+vim requirements.txt
+```
+
+```bash
+flask
+requests
+#pandas
+#beautifulsoup4
+```
+
 ```bash
 vim Dockerfile
 ```
@@ -765,18 +776,26 @@ You can write Docker CMD/ENTRYPOINT instructions in both forms:
 - We can multiple CMD in a single docker file but only one will be executable while the container start.
 
 Let’s see an example.
-`vi Dockerfile`
+```
+vi Dockerfile
+```
 ```bash
 FROM ubuntu
 RUN apt-get update
 CMD ["echo", "Hello World"]
 ```
 Build and run the docker file.
-`docker build -t ubuntu-test .`
-`docker run -it ubuntu-test`
+```
+docker build -t ubuntu-test .
+```
+```
+docker run -it ubuntu-test
+```
 
 *Here, we have passed as parameter Hello World for CMD that prints after container start. Here, we overrode the default value with Hi!*
-`docker run ubuntu-test echo 'Hello Docker'`
+```
+docker run ubuntu-test echo 'Hello Docker'
+```
 
 *In a Dockerfile, only the last CMD instruction is effective. If there are multiple CMD instructions, the last one will override the previous ones.*
 
@@ -785,7 +804,9 @@ Build and run the docker file.
 - You cannot override the ENTRYPOINT instruction by adding command-line parameters to the docker run command.
 
 We will also see an example.
-`vi Dockerfile`
+```
+vi Dockerfile
+```
 ```bash
 FROM ubuntu
 RUN apt-get update
