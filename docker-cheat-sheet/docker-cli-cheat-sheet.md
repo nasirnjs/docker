@@ -35,168 +35,67 @@
 
 ## 🚀 Basic Docker Commands Cheat Sheet 🚀
 
-1. Check Docker version
-
+🔹 ## Basic Commands
 ```bash
 docker version
-```
-2. Display system-wide Docker information
-
-```bash
 docker info
-```
-
-3. Check Docker service status (systemd)
-
-```bash
-systemctl status docker
-```
-
-4. List currently running containers
-
-```bash
 docker ps
-```
-
-5. List all containers (including stopped)
-
-```bash
 docker ps -a
-```
-
-6. List all Docker images
-
-```bash
 docker images
-```
-
-7. Pull and run the latest Nginx container
-
-```bash
-docker run nginx
-```
-
-8. List running containers (long form)
-
-```bash
-docker container ls
-```
-
-9. Remove all unused images (dangling and unreferenced)
-
-```bash
-docker image prune -a
-```
-
-10. Remove stopped containers and unused networks
-
-```bash
-docker system prune
-```
-
-11. Check Docker disk usage
-
-```bash
+docker pull nginx
 docker system df
 ```
 
-12. Pull an image without running it
-
+🔹 ## Run Containers
 ```bash
-docker pull nginx
-```
-
-13. Run a container in detached mode (background)
-
-```bash
+docker run nginx
 docker run -d nginx
+docker run -d --name web -p 8080:80 nginx
+docker run -it ubuntu bash
 ```
 
-14. Run a container with a custom name
-
+🔹 ## Start / Stop / Restart
 ```bash
-docker run -d --name mynginx nginx
-docker run -d --name web-server -p 8080:80 nginx
+docker stop <id>
+docker start <id>
+docker restart <id>
+docker kill <id>
 ```
-
-15. Stop a running container
-
+🔹 ## Remove Containers / Images
 ```bash
-docker stop <container_id>
+docker rm <id>
+docker rm -f <id>
+docker rmi <image>
+docker system prune
+docker image prune -a
+docker container prune
 ```
 
-16. Start a stopped container
-
+🔹 ## Logs / Exec / Inspect
 ```bash
-docker start <container_id>
-```
-
-17. Remove a container
-
-```bash
-docker rm <container_id>
-```
-
-18. Remove an image
-
-```bash
-docker rmi <image_name>
-```
-
-19. Stop all running containers
-```
-docker stop $(docker ps -q)
-```
-20. Remove all containers (stopped and running)
-```
-docker rm $(docker ps -aq)
-```
-21. View logs of a container
-
-```bash
-docker logs <container_id>
-```
-
-22. Enter inside a running container (interactive shell)
-
-```bash
-docker exec -it <container_id> bash
-```
-
-*Use `sh` if bash is not available.*
-
-23. Monitor container resource usage in real-time
-
-```bash
+docker logs <id>
+docker exec -it <id> bash
+docker inspect <id>
 docker stats
+docker top <id>
 ```
-
- ---
+🔹 ## Copy Files
+```bash
+docker cp <id>:/path ./localpath
+docker cp ./localpath <id>:/path
+```
 
 ## Managing Docker Services and Sockets with Systemd
 
 Docker service can still be activated through the Docker socket (`docker.socket`) even if you stop the Docker service (`docker.service`). The Docker socket allows communication with the Docker daemon and is used for Docker API access.
 
-1. This command checks the status of the Docker service.
-```
+```bash
 sudo systemctl status docker
-```
-2. This command stops the Docker service.
-```
 sudo systemctl stop docker
-```
-3. This command checks the status of the Docker service again.
-```
 sudo systemctl status docker
-```
-4. This command stops the Docker socket.
-```
 sudo systemctl stop docker.socket
 ```
-5. This command checks the status of the Docker service once again.
-```
-sudo systemctl status docker
-```
+
 ---
 
 ## The lifecycle of a Docker container
@@ -263,181 +162,31 @@ docker rm my-container
 Docker containers are designed to run a specific command or process and exit when that command or process completes. The default behavior is to start the specified command or process inside the container and stop when that command or process finishes execution.
 Docker containers run as long as the process inside the container is active.
 Example: Default Shell Behavior (Container Stops Immediately).
-```
-docker run busybox
-```
-
-Run an Interactive Terminal (Container Remains Running).
-```
-docker run -it busybox
-```
-
 Run a Command to Keep Container Running (e.g., Sleep). In the third example, the sleep 3600 command will keep the container running for 3600 seconds (1 hour), and then it will exit.
 ```
+docker run busybox
+docker run -it busybox
 docker run busybox sleep 3600
 ```
 
 ---
-## Docker Container Lifecycle
+🐳 ## Container Management
 
 Run a container from an image.
 ```
-docker run nginx
-```
-
-List running containers.
-```
 docker ps
-```
-
-List all containers (running and stopped).
-```
 docker ps -a
-```
-
-Run a command inside a running container.
-```
 docker exec my-nginx ls /usr/share/nginx/html
-```
-
-Display detailed information about a container.
-```
 docker inspect my-nginx
-```
-
-Stop a running container via name or ID.
-```
 docker stop my-nginx
-```
-
-stop all running container.
-```
 docker container stop $(docker container ps -q)
-```
-
-Start a stopped container vi name or ID.
-```
 docker start 24952546f818
-```
-
-Restart a container.
-```
 docker restart 24952546f818
-```
-
-Restart after 30 second.
-```
 docker restart -t 30 6d144a1d546b
-``` 
-
-Remove a stopped container.
-```
-docker rm 24952546f818
-```
-
-Remove multiple containers.
-```
-docker rm 24952546f818 6d144a1d546b
-```
-
-Remove all containers.
-```
-docker rm $(docker ps -aq)
-```
-
-Temporary pause a Docker container.
-```
-docker pause  24952546f818
-```
-
-Unpause a Container.
-```
-docker unpause 24952546f818
-```
-
-## Container Naming and Identification:
-Run a container with Name.
-```
-docker run --name my-container nginx
-```
-
-Rename a container.
-```
-docker rename my-nginx new-nginx
-```
-
-Get the container ID by its name.
-```
 docker inspect --format='{{.Id}}' nginx
 ```
 
-
-## Container Logs and Stats:
-Display the logs of a container.
-```
-docker logs <containerID>
-```
-
-Display a live stream of container resource usage statistics.
-```
-docker stats <containerID>
-```
-
-Check specific container log runtime.
-```
-docker exec 266 cat /var/log/nginx/access.log
-```
-
-## Container Interaction:
-Attach to a running container (not recommended for long-term use).
-```
-docker attach <containerID>
-```
-
-Run an interactive shell inside a container.
-```
-docker container exec -it b71f15d33b60 /bin/bash
-```
-```
-docker container run -it ubuntu
-```
-
-Check container host Name.
-```
-docker container exec b71f15d hostname
-```	
-
- Single container list of the running processes without logging.
-```
-docker container top nginx
-```
-
-Multiple containers stats by name and ID.
-```
-docker container stats nginx 5ac4
-```	
-
-Inspecting Container Information.
-```
-docker inspect <container_id_or_name>
-```
-
-Copy from container to host.
-```
-docker cp <container_id_or_name>:<container_path> <host_path>
-```
-
-Copy from host to container.
-```
-docker cp <host_path> <container_id_or_name>:<container_path>
-```
-
-Remove all stopped containers.
-```
-docker container prune
-```
-
-## Build a simple Docker Image
+🐳 ## Build Docker Images
 
 **What is a Docker Image?**
 A Docker image is a read-only template that contains a set of instructions for creating a container that can run on the Docker platform.
@@ -574,61 +323,14 @@ EXPOSE 8000
 CMD ["python", "app.py"]
 ```
 
-```
-vim requirements.txt
-```
-
-```bash
-flask
-requests
-#pandas
-#beautifulsoup4
-```
-Build and run docker image.
-```
-docker build -t nasirnjs/hello-python:0.0.1 .
-```
-
-```
-docker run nasirnjs/hello-python:0.0.1
-```
-
-## Docker Images and Tag:
-List of all image.
-```
-docker image ls
-```
-
-Pull an image from a registry.
-```
-docker pull nginx
-```
-
-Show detailed information about an image.
-```
-docker image inspect nginx
-```
+🔹 ## Build & Tag Images
 
 <img src="image/docker-image-tag.png" alt="Docker Image Taging explaination" width="800"/>
 
-Tag the existing Image with the New Name.
-```
+```bash
+docker build -t myimage:1.0 .
+docker tag myimage:1.0 repo/myimage:1.0
 docker tag old-image:old-tag new-image:new-tag
-```
-
-Remove an image.
-```
-docker image rm my-image:tag
-```
-
-Remove all unused images.
-```
-docker image prune -a
-```
-
-Remove all images.
-```
-docker rmi $(docker images -q)
 ```
 
 ## Authenticating to Registries
@@ -742,117 +444,102 @@ sudo apt purge --autoremove -y dive
 ```
 
 
-## Publishing Ports:
-
-Publishing a Port.
-```
-docker run -d -p <host_port>:<container_port> --name my_container my_image
-```
-
-Publish all exposed ports to random ports on the host.
-```
-docker run -d -P --name web_server nginx
-```
-
-To see the actual mappings, you can use.
-```
-docker port my_container
-```
-
-
 ##  Difference between CMD vs ENTRYPOINT Docker!
 
 In Docker, both `CMD` and `ENTRYPOINT` are instructions used to specify what command should be run when a container is started.
-You can write Docker CMD/ENTRYPOINT instructions in both forms:
-
-- CMD echo "Hello World" (shell form)
-- CMD ["echo", "Hello World"] (exec form)
-- ENTRYPOINT echo "Hello World" (shell form)
-- ENTRYPOINT ["echo", "Hello World"] (exec form)
+Y
 
 **Docker CMD**
 - Whenever we want to override executable while running the container, use `CMD`.
 - We can override the value with a command-line argument.
 - We can multiple CMD in a single docker file but only one will be executable while the container start.
 
-Let’s see an example.
-```
-vi Dockerfile
+**Docker ENTRYPOINT**
+- ENTRYPOINT defines the fixed command the container will always run.
+- ENTRYPOINT makes the container behave like an executable binary.
+- If you pass arguments when running the container, they are appended to ENTRYPOINT unless you use the --entrypoint flag.
+
+```bash
+vim app.py
 ```
 ```bash
-FROM ubuntu
-RUN apt-get update
-CMD ["echo", "Hello World"]
-```
-Build and run the docker file.
-```
-docker build -t ubuntu-test .
-```
-```
-docker run -it ubuntu-test
+from flask import Flask
+import sys
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "<h1>Hello World from Flask!</h1>"
+
+if __name__ == '__main__':
+    # Default port
+    port = 5000
+
+    # Look for --port argument
+    if '--port' in sys.argv:
+        try:
+            i = sys.argv.index('--port')
+            port = int(sys.argv[i + 1])
+        except (IndexError, ValueError):
+            print("Warning: Invalid or missing port, using 5000")
+            port = 5000
+
+    print(f"Starting Flask on http://0.0.0.0:{port}")
+    app.run(host='0.0.0.0', port=port)
 ```
 
-*Here, we have passed as parameter Hello World for CMD that prints after container start. Here, we overrode the default value with Hi!*
 ```
-docker run ubuntu-test echo 'Hello Docker'
+vim requirements.txt
 ```
 
-*In a Dockerfile, only the last CMD instruction is effective. If there are multiple CMD instructions, the last one will override the previous ones.*
-
-**Docker Entrypoint**
-- Just like with CMD, you need to specify a command and parameters.
-- You cannot override the ENTRYPOINT instruction by adding command-line parameters to the docker run command.
-
-We will also see an example.
+```bash
+Flask==2.3.3
 ```
-vi Dockerfile
+
+```bash
+Dockerfile
 ```
 ```bash
-FROM ubuntu
-RUN apt-get update
-ENTRYPOINT ["echo", "Hello Google"]
-```
-Build and run the docker file.
-```
-docker build -t ubuntu-test .
+# Official slim Python image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy app code
+COPY app.py .
+
+# Expose port (optional, just for documentation)
+EXPOSE 5000
+
+# This will ALWAYS run "python app.py"
+ENTRYPOINT ["python", "app.py"]
+
+# These are the DEFAULT arguments → can be overridden
+CMD ["--port", "5000"]
 ```
 
-```
-docker run -it ubuntu-test
-```
 
-It worked the same as CMD but when we have passed parameters will be see difference.
-```
-docker run -it ubuntu-test:latest 'Hello from AWS'
-```
-
-*we have passed parameters but the executable hasn’t overridden and also added a new parameter with the old parameter.*
-
-**Now, let’s see how to use CMD and Entrypoint together.**
-
-Modify our existing Dockerfile so it includes both `CMD & ENTRYPOINT`instructions.
+Build Application
 ```bash
-FROM ubuntu
-RUN apt-get update
-ENTRYPOINT ["echo", "Hello"]
-CMD ["Google World"]
+docker build -t myflask .
 ```
-Build a new image from the modified Dockerfile and run a container.
+Runs on Default port 5000.
+```bash
+docker run -p 5000:5000 myflask
 ```
-docker build -t ubuntu-test .
+Override port to 8080
+```bash
+docker run -p 8080:8080 myflask --port 8080
 ```
+```bash
+docker run -p 3000:3000 myflask --port 3000
 ```
-docker run -it ubuntu-test:latest
-```
-
-*It will print the message `Hello Google World` message*
-
-Let's pass parameters to the docker run command.
-```
-docker run -it ubuntu-test  Bangladesh
-```
-
-*The output has now changed to `Hello Bangladesh`*
 
 **Conclusion**
 - Whenever there is a chance of overriding executable while running the container using CMD otherwise uses ENTRYPOINT.
