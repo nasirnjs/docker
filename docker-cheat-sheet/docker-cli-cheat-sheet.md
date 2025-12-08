@@ -1,4 +1,56 @@
-# 🚀Docker Cheat Sheet/CLI Commands🚀
+<h2> 🚀 Docker Cheat Sheet/CLI Commands 🚀 </h2>
+
+- [Containerization vs Virtualization](#containerization-vs-virtualization)
+- [Let’s try some basic command](#lets-try-some-basic-command)
+- [Managing Docker Services and Sockets with Systemd](#managing-docker-services-and-sockets-with-systemd)
+- [The lifecycle of a Docker container](#the-lifecycle-of-a-docker-container)
+- [Why a Docker container exits!!!](#why-a-docker-container-exits)
+- [Authenticating to Registries](#authenticating-to-registries)
+- [Docker Image Layer](#docker-image-layer)
+- [Difference between CMD vs ENTRYPOINT Docker!](#difference-between-cmd-vs-entrypoint-docker)
+- [Don,t Ignore .dockerignore](#dont-ignore-dockerignore)
+- [Docker Args \& Environment Variables](#docker-args--environment-variables)
+- [Docker volume:](#docker-volume)
+  - [Summary Table](#summary-table)
+- [Docker Namespace](#docker-namespace)
+  - [1. PID (Process ID) Namespace](#1-pid-process-id-namespace)
+  - [2. Network Namespace](#2-network-namespace)
+  - [3. Mount Namespace](#3-mount-namespace)
+  - [4. UTS Namespace](#4-uts-namespace)
+  - [5. IPC Namespace](#5-ipc-namespace)
+  - [6. User Namespace](#6-user-namespace)
+  - [Summary](#summary)
+- [Docker Cgroups (Control Groups)](#docker-cgroups-control-groups)
+  - [1. CPU Controller](#1-cpu-controller)
+  - [2. Memory Controller](#2-memory-controller)
+  - [3. Block I/O (blkio) Controller](#3-block-io-blkio-controller)
+  - [4. PIDs Controller](#4-pids-controller)
+  - [Summary of Cgroup Controllers in Docker](#summary-of-cgroup-controllers-in-docker)
+- [Docker Networking](#docker-networking)
+  - [1. Bridge Network Driver](#1-bridge-network-driver)
+    - [Example:](#example)
+    - [Description:](#description)
+  - [2. Host Network Driver](#2-host-network-driver)
+    - [Example:](#example-1)
+    - [Description:](#description-1)
+  - [3. IPvlan Network Driver](#3-ipvlan-network-driver)
+    - [Example:](#example-2)
+    - [Description:](#description-2)
+  - [4. Macvlan Network Driver](#4-macvlan-network-driver)
+    - [Example:](#example-3)
+    - [Description:](#description-3)
+  - [5. Null (none) Network Driver](#5-null-none-network-driver)
+    - [Example:](#example-4)
+    - [Description:](#description-4)
+  - [6. Overlay Network Driver](#6-overlay-network-driver)
+    - [Example:](#example-5)
+    - [Description:](#description-5)
+    - [Summary Table](#summary-table-1)
+  - [Building Multi Container Application with Docker](#building-multi-container-application-with-docker)
+  - [Container Cleanup:](#container-cleanup)
+  - [Docker Restart Policy:](#docker-restart-policy)
+
+# Containerization vs Virtualization
 
 **Virtualization:** Each VM runs a full OS with its own kernel and drivers via a hypervisor (VMware, Hyper-V, KVM). Heavy but fully isolated; VMs take minutes to start.
 
@@ -31,11 +83,9 @@
 | **Management**     | Requires hypervisor management, OS updates, and patching per VM.                | Easier to manage, simpler to deploy and scale applications.                                       |
 
 
-## Let’s try some basic command 
+# Let’s try some basic command 
 
-## 🚀 Basic Docker Commands Cheat Sheet 🚀
-
-🔹 ## Basic Commands
+🔹 Basic Commands
 ```bash
 docker version
 docker info
@@ -46,7 +96,7 @@ docker pull nginx
 docker system df
 ```
 
-🔹 ## Run Containers
+🔹 Run Containers
 ```bash
 docker run nginx
 docker run -d nginx
@@ -54,14 +104,14 @@ docker run -d --name web -p 8080:80 nginx
 docker run -it ubuntu bash
 ```
 
-🔹 ## Start / Stop / Restart
+🔹 Start / Stop / Restart
 ```bash
 docker stop <id>
 docker start <id>
 docker restart <id>
 docker kill <id>
 ```
-🔹 ## Remove Containers / Images
+🔹 Remove Containers / Images
 ```bash
 docker rm <id>
 docker rm -f <id>
@@ -71,7 +121,7 @@ docker image prune -a
 docker container prune
 ```
 
-🔹 ## Logs / Exec / Inspect
+🔹 Logs / Exec / Inspect
 ```bash
 docker logs <id>
 docker exec -it <id> bash
@@ -79,13 +129,13 @@ docker inspect <id>
 docker stats
 docker top <id>
 ```
-🔹 ## Copy Files
+🔹 Copy Files
 ```bash
 docker cp <id>:/path ./localpath
 docker cp ./localpath <id>:/path
 ```
 
-## Managing Docker Services and Sockets with Systemd
+# Managing Docker Services and Sockets with Systemd
 
 Docker service can still be activated through the Docker socket (`docker.socket`) even if you stop the Docker service (`docker.service`). The Docker socket allows communication with the Docker daemon and is used for Docker API access.
 
@@ -98,7 +148,7 @@ sudo systemctl stop docker.socket
 
 ---
 
-## The lifecycle of a Docker container
+# The lifecycle of a Docker container
 The lifecycle of a Docker container involves creation, running, stopping, and removal. Containers are created from Docker images, run as isolated instances, can be stopped or paused, and can be removed when no longer needed.
 
 
@@ -158,7 +208,7 @@ docker rm my-container
 
 ---
 
-## Why a Docker container exits!!!
+# Why a Docker container exits!!!
 Docker containers are designed to run a specific command or process and exit when that command or process completes. The default behavior is to start the specified command or process inside the container and stop when that command or process finishes execution.
 Docker containers run as long as the process inside the container is active.
 Example: Default Shell Behavior (Container Stops Immediately).
@@ -333,7 +383,7 @@ docker tag myimage:1.0 repo/myimage:1.0
 docker tag old-image:old-tag new-image:new-tag
 ```
 
-## Authenticating to Registries
+# Authenticating to Registries
 Docker and containerization, a registry is a service that stores and distributes Docker images. Docker images can be stored in public or private registries.
 Here's an overview of public and private registries:
 
@@ -378,7 +428,7 @@ cat ~/.docker/config.json
  ```
 
 
-## Docker Image Layer
+# Docker Image Layer
 In Docker, images are composed of multiple layers. A docker container image is created using a dockerfile. Every line in a dockerfile will create a layer.
 If you make changes to your Dockerfile and rebuild the image, Docker can reuse cached layers to speed up the process, only rebuilding the layers affected by the changes.  Caching plays a significant role in optimizing the build process.
 Let's explore both concepts with examples:
@@ -444,7 +494,7 @@ sudo apt purge --autoremove -y dive
 ```
 
 
-##  Difference between CMD vs ENTRYPOINT Docker!
+# Difference between CMD vs ENTRYPOINT Docker!
 
 In Docker, both `CMD` and `ENTRYPOINT` are instructions used to specify what command should be run when a container is started.
 Y
@@ -547,7 +597,7 @@ docker run -p 3000:3000 myflask --port 3000
 - If ENTRYPOINT is used for the executable, we can use CMD to pass default parameters. In that case, we use both together.
 
 
-## Don,t Ignore .dockerignore
+# Don,t Ignore .dockerignore
 The `.dockerignore` file is used by Docker to specify files and directories that should be excluded (ignored) when building a Docker image. It works similarly to the more widely known `.gitignore` file used by Git to specify files and directories that should be ignored when tracking changes.
 
 Here's how it works:
@@ -570,7 +620,7 @@ README.md
 ```
 Complete Example is [Here](https://github.com/nasirnjs/docker-static-site)
 
-## Docker Args & Environment Variables
+# Docker Args & Environment Variables
 
 ARG and ENV are dockerfile instructions, which you can apply the different configurations.
 
@@ -633,7 +683,7 @@ docker run -d -p 5050:5000 flask-env-demo
 docker run -d -p 5051:5000 -e APP_MESSAGE="Runtime message from Nasir" flask-env-demo
 ```
 
-## Docker volume:
+# Docker volume:
 
 Docker volumes are used to **persist data** generated by Docker containers.  
 They allow:
@@ -690,7 +740,7 @@ docker inspect bind-mount
 
 Host folder `/home/nasir/bind-mount` becomes `/usr/share/nginx/html` inside container.
 
-### Summary Table
+## Summary Table
 
 | Type                 | Created | Data Location   | Use Case                               |
 | -------------------- | ------- | --------------- | -------------------------------------- |
@@ -699,7 +749,7 @@ Host folder `/home/nasir/bind-mount` becomes `/usr/share/nginx/html` inside cont
 | **Bind Mount**       | Manual  | Host filesystem | Local development / direct file access |
 
 
-## Docker Namespace
+# Docker Namespace
 
 Docker namespaces provide **process isolation and resource abstraction**, allowing multiple containers to run on the same host without interfering with each other.
 
@@ -751,7 +801,7 @@ ip netns exec 6f3a5b2f1d0e ip addr
 **Purpose:** Maps container user IDs to host user IDs, enhancing security.
 
 
-### ✅ Summary
+## Summary
 
 * **PID Namespace:** isolates processes
 * **Network Namespace:** isolates networking
@@ -761,10 +811,6 @@ ip netns exec 6f3a5b2f1d0e ip addr
 * **User Namespace:** isolates user IDs
 
 Use `docker inspect` to query namespace details for any running container.
-
-
-
-## Docker Cgroups
 
 # Docker Cgroups (Control Groups)
 
@@ -837,7 +883,7 @@ docker run -d --name my-container --pids-limit=100 nginx
 docker inspect --format '{{.HostConfig.PidsLimit}}' my-container
 ```
 
-### ✅ Summary of Cgroup Controllers in Docker
+## Summary of Cgroup Controllers in Docker
 
 | Controller | What it Controls     | Example Limit |
 | ---------- | -------------------- | ------------- |
@@ -1006,14 +1052,8 @@ docker service create --network=my_overlay_network my_service
 | **none**    | Isolated       | No networking required                      |
 | **overlay** | Multi-host     | Docker Swarm cluster networking             |
 
----
-
-
-
 
 ## Building Multi Container Application with Docker
-
-
 
 ## Container Cleanup:
 docker container prune: Remove all stopped containers.
