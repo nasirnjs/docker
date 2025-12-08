@@ -1,4 +1,4 @@
-<h2> 🚀 Docker Cheat Sheet/CLI Commands 🚀 </h2>
+<h2> Docker Comprehensive Cheat Sheet & Reference Guide 🐳 </h2>
 
 - [Containerization vs Virtualization](#containerization-vs-virtualization)
 - [Let’s try some basic command](#lets-try-some-basic-command)
@@ -48,12 +48,15 @@
     - [Description:](#description-5)
     - [Summary Table](#summary-table-1)
 - [Building Multi Container Application with Docker, Dockercompose](#building-multi-container-application-with-docker-dockercompose)
-- [Container Cleanup](#container-cleanup)
-  - [Container Cleanup](#container-cleanup-1)
+- [Container Cleanup: Complete Reference](#container-cleanup-complete-reference)
+  - [Container Operations](#container-operations)
   - [Image Cleanup](#image-cleanup)
   - [Volume Cleanup](#volume-cleanup)
   - [Network Cleanup](#network-cleanup)
   - [System-Wide Cleanup](#system-wide-cleanup)
+  - [Selective Cleanup](#selective-cleanup)
+  - [By Age/Date](#by-agedate)
+  - [Exit Code Based Cleanup](#exit-code-based-cleanup)
 
 # Containerization vs Virtualization
 
@@ -1075,80 +1078,128 @@ docker service create --network=my_overlay_network my_service
 # Building Multi Container Application with Docker, Dockercompose
 
 
-# Container Cleanup
+# Container Cleanup: Complete Reference
 
-## Container Cleanup
+## Container Operations
 ```bash
 # List containers
-docker ps                      # Running containers
-docker ps -a                   # All containers (including stopped)
-docker ps -aq                  # All container IDs only
+docker ps                          # Running containers only
+docker ps -a                       # All containers (including stopped)
+docker ps -aq                      # Only container IDs
+docker ps -f "status=running"      # Filter by status
+docker ps -f "name=web"           # Filter by name
 
 # Stop containers
-docker stop <container_id>     # Stop specific container
-docker stop $(docker ps -q)    # Stop all running containers
+docker stop container_name         # Stop specific container
+docker stop container1 container2  # Stop multiple containers
+docker stop $(docker ps -q)        # Stop ALL running containers
+docker kill container_name         # Force kill (SIGKILL)
 
 # Remove containers
-docker rm <container_id>                     # Remove specific container
-docker rm -f <container_id>                  # Force remove running container
-docker rm $(docker ps -aq)                   # Remove all containers
-docker container prune                       # Remove all stopped containers
-docker container prune -f                    # Force remove without confirmation
-
-# Advanced container removal
-docker rm $(docker ps -a -f status=exited -q)      # Remove only exited containers
-docker rm $(docker ps -a -f status=created -q)     # Remove created containers
-
+docker rm container_name           # Remove specific stopped container
+docker rm -f container_name        # Force remove running container
+docker rm container1 container2    # Remove multiple containers
+docker container prune             # Remove all stopped containers
+docker container prune -f          # Force prune without confirmation
+docker rm $(docker ps -aq)         # Remove ALL containers (force if running)
 ```
 ## Image Cleanup
 ```bash
 # List images
-docker images                  # All images
-docker images -a               # All images (including intermediate)
-docker images --filter dangling=true  # Dangling images
+docker images                      # All images
+docker images -a                   # All including intermediate layers
+docker images --no-trunc           # Show full image IDs
+docker images --filter "dangling=true"  # Dangling images
 
 # Remove images
-docker rmi <image_id>                     # Remove specific image
-docker rmi $(docker images -q)            # Remove all images
-docker image prune                        # Remove dangling images
-docker image prune -a                     # Remove all unused images
-docker image prune -a --filter "until=24h" # Remove images older than 24h
+docker rmi image_id                # Remove specific image
+docker rmi image1 image2           # Remove multiple images
+docker rmi $(docker images -q)     # Remove ALL images
+docker image prune                 # Remove dangling images
+docker image prune -a              # Remove all unused images
+docker image prune -a --filter "until=24h"  # Images older than 24h
 ```
 
 ## Volume Cleanup
 ```bash
 # List volumes
 docker volume ls
-docker volume ls --filter dangling=true   # Dangling volumes
+docker volume ls --quiet           # Only volume names
+docker volume ls --filter dangling=true
 
 # Remove volumes
-docker volume rm <volume_name>            # Remove specific volume
-docker volume prune                       # Remove all unused volumes
-docker volume rm $(docker volume ls -q)   # Remove all volumes (careful!)
+docker volume rm volume_name       # Remove specific volume
+docker volume prune                # Remove all unused volumes
+docker volume prune -f             # Force remove without confirmation
+docker volume rm $(docker volume ls -q)  # Remove ALL volumes
 ```
 
 ## Network Cleanup
 ```bash
 # List networks
 docker network ls
-docker network ls --filter type=custom    # Only custom networks
+docker network ls --filter type=custom
 
 # Remove networks
-docker network rm <network_name>          # Remove specific network
-docker network prune                      # Remove unused networks
+docker network rm network_name     # Remove specific network
+docker network prune               # Remove unused networks
+docker network prune -f            # Force remove
 ```
 
 ## System-Wide Cleanup
 ```bash
 # Check disk usage
-docker system df                          # Show docker disk usage
-docker system df -v                       # Verbose disk usage
+docker system df                   # Show disk usage summary
+docker system df -v                # Verbose output
 
-# Clean everything
-docker system prune                       # Remove all unused data
-docker system prune -a                    # Remove all unused images too
-docker system prune -a --volumes          # Remove everything including volumes
+# Comprehensive cleanup
+docker system prune                # Remove unused data
+docker system prune -a             # Remove all unused images too
+docker system prune -a --volumes   # Remove everything including volumes
+docker system prune -f             # Force without confirmation
 
-# With filters
-docker system prune --filter "until=72h"  # Remove resources older than 72h
+# Filtered cleanup
+docker system prune --filter "until=72h"   # Older than 72 hours
+```
+
+## Selective Cleanup
+```bash
+# Remove containers with specific label
+docker rm $(docker ps -aq --filter "label=environment=staging")
+
+# Remove containers by status
+docker rm $(docker ps -aq -f status=exited)       # All exited
+docker rm $(docker ps -aq -f status=created)      # Only created
+docker rm $(docker ps -aq -f status=paused)       # Paused containers
+
+# Remove images by label
+docker rmi $(docker images -q --filter "label=version=test")
+
+# Remove by name pattern
+docker rm $(docker ps -aq --filter "name=*temp*")
+```
+
+## By Age/Date
+```bash
+# Remove containers older than specific time
+docker container prune --filter "until=24h"
+
+# Remove images older than 7 days
+docker image prune -a --filter "until=168h"
+
+# Custom date filter (Linux)
+docker rm $(docker ps -a --format "{{.ID}} {{.CreatedAt}}" | \
+  awk '$2 <= "'$(date -d '3 days ago' --iso-8601=seconds)'" {print $1}')
+```
+
+## Exit Code Based Cleanup
+```bash
+# Remove successfully exited containers (exit 0)
+docker rm $(docker ps -aq -f status=exited -f "exited=0")
+
+# Remove failed containers (non-zero exit)
+docker rm $(docker ps -aq -f status=exited -f "exited!=0")
+
+# Remove containers with specific exit code
+docker rm $(docker ps -aq -f status=exited -f "exited=137")  # SIGKILL
 ```
