@@ -580,8 +580,31 @@ Default values can be specified for ARG parameters in the Dockerfile, and they c
 You can pass ENV variables not only during the image building but also at runtime when your containers are running.
 ENV can also have a default value in the dockerfile and you can override ENV values.
 
-[Here](https://github.com/nasirnjs/docker-nodejs-env) is a Nodejs app ENV Example.
+```bash
+vim app.py
+```
+```bash
+from flask import Flask
+import os
 
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    version = os.getenv("APP_VERSION", "unknown")
+    message = os.getenv("APP_MESSAGE", "Hello from Flask!")
+    return f"Version: {version} | Message: {message}"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+```
+
+```bash
+docker build -t flask-env-demo --build-arg APP_VERSION=3.2 .
+```
+```bash
+docker run -d -p 5050:5000 -e APP_MESSAGE="Runtime message from Nasir" flask-env-demo
+```
 
 ## Docker volume:
 
