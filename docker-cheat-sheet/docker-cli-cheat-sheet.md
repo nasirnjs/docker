@@ -766,39 +766,89 @@ Use `docker inspect` to query namespace details for any running container.
 
 ## Docker Cgroups
 
-Docker leverages several control groups (cgroups) controllers to manage and control resource usage within containers. Here are some common cgroups controllers used in Docker, along with examples:
+# Docker Cgroups (Control Groups)
 
-CPU Controller:
-Example: Limit a container to use a maximum of 50% of one CPU core.
-```
-docker stop my-container  && docker rm my-container
+Docker uses **cgroups** to control and limit the resources a container can use. Below are the most common cgroup controllers with practical examples.
+
+
+## 1. CPU Controller
+
+**Purpose:** Limit the CPU usage of a container.
+
+**Example:** Limit a container to use **50% of a single CPU core**.
+
+```bash
+docker stop my-container && docker rm my-container
+
+# Run container with CPU limit
 docker run -d --name my-container --cpus=0.5 nginx
+
+# Verify CPU limit
 docker inspect --format '{{.HostConfig.NanoCpus}}' my-container
 ```
 
-Memory Controller:
-Example: Restrict a container to use a maximum of 512 megabytes of memory.
-```
-docker stop my-container  && docker rm my-container
+## 2. Memory Controller
+
+**Purpose:** Restrict the amount of RAM a container can use.
+
+**Example:** Limit container memory to **512MB**.
+
+```bash
+docker stop my-container && docker rm my-container
+
+# Run container with memory limit
 docker run -d --name my-container --memory=512m nginx
+
+# Verify memory limit (converted to human-readable format)
 docker inspect --format '{{.HostConfig.Memory}}' my-container | numfmt --to=iec
 ```
 
-Block I/O Controller:
-Example: Control the maximum read and write rates to block devices for a container.
-```
-docker stop my-container  && docker rm my-container
+
+## 3. Block I/O (blkio) Controller
+
+**Purpose:** Control how fast a container can read/write data to block devices.
+
+**Example:** Limit write speed to **1MB/s** on `/dev/sda`.
+
+```bash
+docker stop my-container && docker rm my-container
+
+# Run container with I/O write limit
 docker run -d --name my-container --device-write-bps=/dev/sda:1mb nginx
-docker inspect --format '{{.HostConfig.BlkioDeviceWriteBps}}' my-container | cut -d: -f2 | tr -d ']' | numfmt --to=iec
+
+# Verify blkio write rate limit
+docker inspect --format '{{.HostConfig.BlkioDeviceWriteBps}}' my-container \
+  | cut -d: -f2 | tr -d ']' | numfmt --to=iec
 ```
 
-PIDs Controller:
-Example: Limit the number of processes a container can create.
-```
-docker stop my-container  && docker rm my-container
+## 4. PIDs Controller
+
+**Purpose:** Limit the number of processes a container can create.
+
+**Example:** Set a maximum of **100 processes**.
+
+```bash
+docker stop my-container && docker rm my-container
+
+# Run container with PID limit
 docker run -d --name my-container --pids-limit=100 nginx
+
+# Verify PID limit
 docker inspect --format '{{.HostConfig.PidsLimit}}' my-container
 ```
+
+### ✅ Summary of Cgroup Controllers in Docker
+
+| Controller | What it Controls     | Example Limit |
+| ---------- | -------------------- | ------------- |
+| **CPU**    | CPU time usage       | Max 0.5 CPU   |
+| **Memory** | RAM usage            | 512MB         |
+| **blkio**  | Disk read/write rate | 1MB/s         |
+| **PIDs**   | Number of processes  | 100 processes |
+
+
+If you want, I can also create a **combined Docker Cgroups + Namespaces cheat sheet** in one file.
+
 
 ## Docker Networking
 
