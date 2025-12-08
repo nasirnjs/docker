@@ -14,39 +14,26 @@
 - [Docker volume:](#docker-volume)
   - [Summary Table](#summary-table)
 - [Docker Namespace](#docker-namespace)
-  - [1. PID (Process ID) Namespace](#1-pid-process-id-namespace)
-  - [2. Network Namespace](#2-network-namespace)
-  - [3. Mount Namespace](#3-mount-namespace)
-  - [4. UTS Namespace](#4-uts-namespace)
-  - [5. IPC Namespace](#5-ipc-namespace)
-  - [6. User Namespace](#6-user-namespace)
+  - [PID (Process ID) Namespace](#pid-process-id-namespace)
+  - [Network Namespace](#network-namespace)
+  - [Mount Namespace](#mount-namespace)
+  - [UTS Namespace](#uts-namespace)
+  - [IPC Namespace](#ipc-namespace)
+  - [User Namespace](#user-namespace)
   - [Summary](#summary)
 - [Docker Cgroups (Control Groups)](#docker-cgroups-control-groups)
-  - [1. CPU Controller](#1-cpu-controller)
-  - [2. Memory Controller](#2-memory-controller)
-  - [3. Block I/O (blkio) Controller](#3-block-io-blkio-controller)
-  - [4. PIDs Controller](#4-pids-controller)
+  - [CPU Controller](#cpu-controller)
+  - [Memory Controller](#memory-controller)
+  - [Block I/O (blkio) Controller](#block-io-blkio-controller)
+  - [PIDs Controller](#pids-controller)
   - [Summary of Cgroup Controllers in Docker](#summary-of-cgroup-controllers-in-docker)
 - [Docker Networking](#docker-networking)
-  - [1. Bridge Network Driver](#1-bridge-network-driver)
-    - [Example:](#example)
-    - [Description:](#description)
-  - [2. Host Network Driver](#2-host-network-driver)
-    - [Example:](#example-1)
-    - [Description:](#description-1)
-  - [3. IPvlan Network Driver](#3-ipvlan-network-driver)
-    - [Example:](#example-2)
-    - [Description:](#description-2)
-  - [4. Macvlan Network Driver](#4-macvlan-network-driver)
-    - [Example:](#example-3)
-    - [Description:](#description-3)
-  - [5. Null (none) Network Driver](#5-null-none-network-driver)
-    - [Example:](#example-4)
-    - [Description:](#description-4)
-  - [6. Overlay Network Driver](#6-overlay-network-driver)
-    - [Example:](#example-5)
-    - [Description:](#description-5)
-    - [Summary Table](#summary-table-1)
+  - [Bridge Network Driver](#bridge-network-driver)
+  - [Host Network Driver](#host-network-driver)
+  - [IPvlan Network Driver](#ipvlan-network-driver)
+  - [Macvlan Network Driver](#macvlan-network-driver)
+  - [Null (none) Network Driver](#null-none-network-driver)
+  - [Overlay Network Driver](#overlay-network-driver)
 - [Building Multi Container Application with Docker, Dockercompose](#building-multi-container-application-with-docker-dockercompose)
 - [Container Cleanup: Complete Reference](#container-cleanup-complete-reference)
   - [Container Operations](#container-operations)
@@ -775,7 +762,7 @@ Host folder `/home/nasir/bind-mount` becomes `/usr/share/nginx/html` inside cont
 
 Docker namespaces provide **process isolation and resource abstraction**, allowing multiple containers to run on the same host without interfering with each other.
 
-## 1. PID (Process ID) Namespace
+## PID (Process ID) Namespace
 
 **Purpose:** Isolates process IDs so each container has its own process tree.
 
@@ -791,7 +778,7 @@ docker inspect --format '{{.State.Pid}}' web
 # Enter the container's PID namespace (replace <PID> with actual PID)
 nsenter -t <PID> -p bash
 ```
-## 2. Network Namespace
+## Network Namespace
 
 **Purpose:** Provides each container with its own network stack (interfaces, IPs, routing tables).
 
@@ -806,19 +793,19 @@ docker inspect --format '{{.NetworkSettings.SandboxKey}}' web
 # Inspect network interfaces in the container's namespace
 ip netns exec 6f3a5b2f1d0e ip addr
 ```
-## 3. Mount Namespace
+## Mount Namespace
 
 **Purpose:** Isolates filesystem mounts. Each container can have a different view of the filesystem.
 
-## 4. UTS Namespace
+## UTS Namespace
 
 **Purpose:** Isolates hostname and domain name. Containers can have unique hostnames.
 
-## 5. IPC Namespace
+## IPC Namespace
 
 **Purpose:** Isolates inter-process communication (shared memory, semaphores, message queues).
 
-## 6. User Namespace
+## User Namespace
 
 **Purpose:** Maps container user IDs to host user IDs, enhancing security.
 
@@ -839,7 +826,7 @@ Use `docker inspect` to query namespace details for any running container.
 Docker uses **cgroups** to control and limit the resources a container can use. Below are the most common cgroup controllers with practical examples.
 
 
-## 1. CPU Controller
+## CPU Controller
 
 **Purpose:** Limit the CPU usage of a container.
 
@@ -855,7 +842,7 @@ docker run -d --name my-container --cpus=0.5 nginx
 docker inspect --format '{{.HostConfig.NanoCpus}}' my-container
 ```
 
-## 2. Memory Controller
+## Memory Controller
 
 **Purpose:** Restrict the amount of RAM a container can use.
 
@@ -872,7 +859,7 @@ docker inspect --format '{{.HostConfig.Memory}}' my-container | numfmt --to=iec
 ```
 
 
-## 3. Block I/O (blkio) Controller
+## Block I/O (blkio) Controller
 
 **Purpose:** Control how fast a container can read/write data to block devices.
 
@@ -889,7 +876,7 @@ docker inspect --format '{{.HostConfig.BlkioDeviceWriteBps}}' my-container \
   | cut -d: -f2 | tr -d ']' | numfmt --to=iec
 ```
 
-## 4. PIDs Controller
+## PIDs Controller
 
 **Purpose:** Limit the number of processes a container can create.
 
@@ -930,11 +917,11 @@ docker info
 ```
 
 
-## 1. Bridge Network Driver
+## Bridge Network Driver
 
 **Default network driver** for single-host container communication.
 
-### Example:
+**Example:**
 
 ```bash
 docker network create --driver=bridge my_bridge_net
@@ -948,33 +935,33 @@ docker inspect web-server   # or use container ID
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web-server
 ```
 
-### Description:
+**Description:**
 
 * Default Docker network driver.
 * Containers get their own IP and communicate via virtual Ethernet bridge.
 * Suitable for local container-to-container communication on a **single host**.
 
-## 2. Host Network Driver
+## Host Network Driver
 
 **Uses host network directly** (no isolation).
 
-### Example:
+**Example:**
 
 ```bash
 docker run --network=host -d --name=web-server nginx
 ```
 
-### Description:
+**Description:**
 
 * Container shares the **host network namespace**.
 * No container-level isolation: host ports compete directly.
 * Useful for high-performance networking where overhead needs to be minimized.
 
-## 3. IPvlan Network Driver
+## IPvlan Network Driver
 
 Allows containers to connect directly to the **underlay network** with unique IP addresses.
 
-### Example:
+**Example:**
 
 ```bash
 docker network create -d ipvlan \
@@ -991,18 +978,18 @@ docker inspect web-server
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web-server
 ```
 
-### Description:
+**Description:**
 
 * Works at **Layer 2 (L2)** or **Layer 3 (L3)**.
 * Containers act like hosts on the physical LAN.
 * Good when you need **direct physical network integration**.
 
 
-## 4. Macvlan Network Driver
+## Macvlan Network Driver
 
 Gives containers their **own MAC address** on the physical network.
 
-### Example:
+**Example:**
 
 ```bash
 docker network create -d macvlan \
@@ -1019,17 +1006,17 @@ docker inspect web-server
 docker inspect -f '{{.NetworkSettings.Networks.my_macvlan_network.IPAddress}} {{.NetworkSettings.Networks.my_macvlan_network.MacAddress}}' web-server
 ```
 
-### Description:
+**Description:**
 
 * Each container gets a **unique MAC address**.
 * Appears as a separate device on the LAN.
 * Useful when connecting containers directly to your physical network.
 
-## 5. Null (none) Network Driver
+## Null (none) Network Driver
 
 Provides **no network connectivity**.
 
-### Example:
+**Example:**
 
 ```bash
 docker run --network=none -d --name=web-server nginx
@@ -1038,17 +1025,17 @@ docker ps
 docker inspect web-server
 ```
 
-### Description:
+**Description:**
 
 * Container has **no network interfaces** except loopback.
 * Best for **fully isolated** workloads (security, batch jobs, testing).
 
 
-## 6. Overlay Network Driver
+## Overlay Network Driver
 
 Used for **multi-host networking** in Docker Swarm clusters.
 
-### Example:
+**Example:**
 
 ```bash
 docker network create --driver=overlay my_overlay_network
@@ -1056,14 +1043,14 @@ docker network create --driver=overlay my_overlay_network
 docker service create --network=my_overlay_network my_service
 ```
 
-### Description:
+**Description:**
 
 * Enables communication **across multiple Docker hosts**.
 * Uses VXLAN encapsulation.
 * Designed for **Swarm Mode** services.
 
 
-### Summary Table
+**Summary Table**
 
 | Driver      | Scope          | Use Case                                    |
 | ----------- | -------------- | ------------------------------------------- |
@@ -1076,6 +1063,74 @@ docker service create --network=my_overlay_network my_service
 
 
 # Building Multi Container Application with Docker, Dockercompose
+
+
+```bash
+vim docker-compose.yaml
+```
+
+```bash
+services:
+  # MySQL
+  mysqldb:
+    image: mysql:8.0
+    container_name: my-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - quickops_network
+
+  # PhpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: my-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysqldb
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysqldb
+    networks:
+      - quickops_network
+
+volumes:
+  mysql-data:
+
+networks:
+  quickops_network:
+    driver: bridge
+```
+
+```bash
+vim .env
+```
+
+```bash
+MYSQL_ROOT_PASSWORD=RandomPassword
+MYSQL_DATABASE=mydb
+MYSQL_USER=nasir
+MYSQL_PASSWORD=RandomPassword
+
+```
+
+```bash
+docker compose up -d
+```
+```bash
+docker compose logs -f
+```
 
 
 # Container Cleanup: Complete Reference
