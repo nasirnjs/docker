@@ -6,6 +6,7 @@
 - [The lifecycle of a Docker container](#the-lifecycle-of-a-docker-container)
 - [Why a Docker container exits!!!](#why-a-docker-container-exits)
 - [Authenticating to Registries](#authenticating-to-registries)
+- [Docker Image Management](#docker-image-management)
 - [Docker Image Layer](#docker-image-layer)
 - [Difference between CMD vs ENTRYPOINT Docker!](#difference-between-cmd-vs-entrypoint-docker)
 - [Don,t Ignore .dockerignore](#dont-ignore-dockerignore)
@@ -46,9 +47,13 @@
     - [Example:](#example-5)
     - [Description:](#description-5)
     - [Summary Table](#summary-table-1)
-  - [Building Multi Container Application with Docker](#building-multi-container-application-with-docker)
-  - [Container Cleanup:](#container-cleanup)
-  - [Docker Restart Policy:](#docker-restart-policy)
+- [Building Multi Container Application with Docker, Dockercompose](#building-multi-container-application-with-docker-dockercompose)
+- [Container Cleanup](#container-cleanup)
+  - [Container Cleanup](#container-cleanup-1)
+  - [Image Cleanup](#image-cleanup)
+  - [Volume Cleanup](#volume-cleanup)
+  - [Network Cleanup](#network-cleanup)
+  - [System-Wide Cleanup](#system-wide-cleanup)
 
 # Containerization vs Virtualization
 
@@ -426,7 +431,21 @@ cat ~/.docker/config.json
  ```
  docker system df
  ```
+# Docker Image Management
+```bash
+# Cleanup commands
+docker image prune -a
+docker system df
+docker system prune -a
 
+# Image tagging best practices
+docker tag myimage:latest myregistry.com/myimage:v1.0
+docker push/pull
+
+# Save/load images
+docker save -o myimage.tar myimage:tag
+docker load -i myimage.tar
+```
 
 # Docker Image Layer
 In Docker, images are composed of multiple layers. A docker container image is created using a dockerfile. Every line in a dockerfile will create a layer.
@@ -1053,18 +1072,83 @@ docker service create --network=my_overlay_network my_service
 | **overlay** | Multi-host     | Docker Swarm cluster networking             |
 
 
-## Building Multi Container Application with Docker
-
-## Container Cleanup:
-docker container prune: Remove all stopped containers.
-docker container stop $(docker container ps -q): Stop all running containers.
-docker container rm $(docker ps -aq): Remove all containers.
+# Building Multi Container Application with Docker, Dockercompose
 
 
+# Container Cleanup
 
+## Container Cleanup
+```bash
+# List containers
+docker ps                      # Running containers
+docker ps -a                   # All containers (including stopped)
+docker ps -aq                  # All container IDs only
 
-## Docker Restart Policy:
+# Stop containers
+docker stop <container_id>     # Stop specific container
+docker stop $(docker ps -q)    # Stop all running containers
 
+# Remove containers
+docker rm <container_id>                     # Remove specific container
+docker rm -f <container_id>                  # Force remove running container
+docker rm $(docker ps -aq)                   # Remove all containers
+docker container prune                       # Remove all stopped containers
+docker container prune -f                    # Force remove without confirmation
 
+# Advanced container removal
+docker rm $(docker ps -a -f status=exited -q)      # Remove only exited containers
+docker rm $(docker ps -a -f status=created -q)     # Remove created containers
 
-[Ref](https://docs.docker.com/engine/reference/run/)
+```
+## Image Cleanup
+```bash
+# List images
+docker images                  # All images
+docker images -a               # All images (including intermediate)
+docker images --filter dangling=true  # Dangling images
+
+# Remove images
+docker rmi <image_id>                     # Remove specific image
+docker rmi $(docker images -q)            # Remove all images
+docker image prune                        # Remove dangling images
+docker image prune -a                     # Remove all unused images
+docker image prune -a --filter "until=24h" # Remove images older than 24h
+```
+
+## Volume Cleanup
+```bash
+# List volumes
+docker volume ls
+docker volume ls --filter dangling=true   # Dangling volumes
+
+# Remove volumes
+docker volume rm <volume_name>            # Remove specific volume
+docker volume prune                       # Remove all unused volumes
+docker volume rm $(docker volume ls -q)   # Remove all volumes (careful!)
+```
+
+## Network Cleanup
+```bash
+# List networks
+docker network ls
+docker network ls --filter type=custom    # Only custom networks
+
+# Remove networks
+docker network rm <network_name>          # Remove specific network
+docker network prune                      # Remove unused networks
+```
+
+## System-Wide Cleanup
+```bash
+# Check disk usage
+docker system df                          # Show docker disk usage
+docker system df -v                       # Verbose disk usage
+
+# Clean everything
+docker system prune                       # Remove all unused data
+docker system prune -a                    # Remove all unused images too
+docker system prune -a --volumes          # Remove everything including volumes
+
+# With filters
+docker system prune --filter "until=72h"  # Remove resources older than 72h
+```
