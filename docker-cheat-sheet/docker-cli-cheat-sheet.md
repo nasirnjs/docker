@@ -850,7 +850,6 @@ docker inspect --format '{{.HostConfig.PidsLimit}}' my-container
 If you want, I can also create a **combined Docker Cgroups + Namespaces cheat sheet** in one file.
 
 
-## Docker Networking
 
 # Docker Networking
 
@@ -862,7 +861,6 @@ You can check available network drivers (under **Plugins → Network**) via:
 docker info
 ```
 
-# 🟦 Docker Network Drivers (with Examples)
 
 ## 1. Bridge Network Driver
 
