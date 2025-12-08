@@ -995,7 +995,7 @@ docker service create --network=my_overlay_network my_service
 * Designed for **Swarm Mode** services.
 
 
-# Summary Table
+### Summary Table
 
 | Driver      | Scope          | Use Case                                    |
 | ----------- | -------------- | ------------------------------------------- |
