@@ -600,10 +600,37 @@ if __name__ == "__main__":
 ```
 
 ```bash
+Dockerfile
+```
+
+```bash
+FROM python:3.11-slim
+
+# Build-time ARG
+ARG APP_VERSION=1.0.0
+
+# Make ARG available at runtime
+ENV APP_VERSION=${APP_VERSION}
+
+# Default runtime ENV
+ENV APP_MESSAGE="Default message from Dockerfile"
+
+WORKDIR /app
+COPY app.py .
+
+RUN pip install flask
+
+CMD ["python", "app.py"]
+```
+
+```bash
 docker build -t flask-env-demo --build-arg APP_VERSION=3.2 .
 ```
 ```bash
-docker run -d -p 5050:5000 -e APP_MESSAGE="Runtime message from Nasir" flask-env-demo
+docker run -d -p 5050:5000 flask-env-demo
+```
+```bash
+docker run -d -p 5051:5000 -e APP_MESSAGE="Runtime message from Nasir" flask-env-demo
 ```
 
 ## Docker volume:
