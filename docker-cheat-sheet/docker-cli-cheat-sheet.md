@@ -852,84 +852,165 @@ If you want, I can also create a **combined Docker Cgroups + Namespaces cheat sh
 
 ## Docker Networking
 
-Docker networking facilitates communication between containers and the external environment through the host machine where the Docker daemon operates.
+# Docker Networking
 
-Docker comes with five built-in network drivers that implement core networking functionality. Network (bridge, host, ipvlan, macvlan, null & overlay)
+Docker networking enables communication between containers and the external environment via the host machine. Docker provides several built-in network drivers, each designed for specific use cases.
 
-**Here are examples and brief descriptions for each of the mentioned Docker network drivers.**
+You can check available network drivers (under **Plugins → Network**) via:
 
-Check available network drivers from the "Plugins" section under "Server" vi `docker info` command.
+```bash
+docker info
+```
 
-**1. Bridge Driver Example:**
+# 🟦 Docker Network Drivers (with Examples)
+
+## 1. Bridge Network Driver
+
+**Default network driver** for single-host container communication.
+
+### Example:
+
 ```bash
 docker network create --driver=bridge my_bridge_net
+
 docker run --network=my_bridge_net -d --name=web-server nginx
+
 docker ps
-docker inspect 454
+
+docker inspect web-server   # or use container ID
+
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web-server
 ```
-*Description:*
-- Default driver for container communication on a single host.
-- Containers share the host's network stack by default.
 
-**2. Host Driver Example:**
-`docker run --network=host -d --name=web-server nginx`
+### Description:
 
-*Description:*
-- Containers use the host's network directly.
-- No network isolation between containers.
-- Bind them to the same host port 80.
+* Default Docker network driver.
+* Containers get their own IP and communicate via virtual Ethernet bridge.
+* Suitable for local container-to-container communication on a **single host**.
 
-**3. IPvlan Driver Example:**
+## 2. Host Network Driver
+
+**Uses host network directly** (no isolation).
+
+### Example:
 
 ```bash
-docker network create -d ipvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o ipvlan_mode=l2 my_ipvlan_net
+docker run --network=host -d --name=web-server nginx
+```
+
+### Description:
+
+* Container shares the **host network namespace**.
+* No container-level isolation: host ports compete directly.
+* Useful for high-performance networking where overhead needs to be minimized.
+
+## 3. IPvlan Network Driver
+
+Allows containers to connect directly to the **underlay network** with unique IP addresses.
+
+### Example:
+
+```bash
+docker network create -d ipvlan \
+  --subnet=192.168.1.0/24 \
+  --gateway=192.168.1.1 \
+  -o ipvlan_mode=l2 \
+  my_ipvlan_net
+
 docker run --network=my_ipvlan_net -d --name=web-server nginx
+
 docker ps
-docker inspect 1f9
+docker inspect web-server
+
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web-server
 ```
-*Description:*
-- Configures sub-interfaces with unique MAC and IP addresses.
-- Containers can directly connect to the physical network.
 
-**4. Macvlan Driver Example:**
+### Description:
 
-```
-docker network create -d macvlan --subnet=192.168.10.0/24 --gateway=192.168.10.1 -o parent=eno1 my_macvlan_network
+* Works at **Layer 2 (L2)** or **Layer 3 (L3)**.
+* Containers act like hosts on the physical LAN.
+* Good when you need **direct physical network integration**.
+
+
+## 4. Macvlan Network Driver
+
+Gives containers their **own MAC address** on the physical network.
+
+### Example:
+
+```bash
+docker network create -d macvlan \
+  --subnet=192.168.10.0/24 \
+  --gateway=192.168.10.1 \
+  -o parent=eno1 \
+  my_macvlan_network
+
 docker run --network=my_macvlan_network -d --name=web-server nginx
+
 docker ps
-docker inspect 1022
+docker inspect web-server
+
 docker inspect -f '{{.NetworkSettings.Networks.my_macvlan_network.IPAddress}} {{.NetworkSettings.Networks.my_macvlan_network.MacAddress}}' web-server
 ```
 
-*Description:*
-- Creates sub-interfaces with unique MAC and IP addresses.
-- Containers appear as individual devices on the network.
+### Description:
 
-**5. Null Driver Example:**
+* Each container gets a **unique MAC address**.
+* Appears as a separate device on the LAN.
+* Useful when connecting containers directly to your physical network.
 
-```
+## 5. Null (none) Network Driver
+
+Provides **no network connectivity**.
+
+### Example:
+
+```bash
 docker run --network=none -d --name=web-server nginx
+
 docker ps
-docker inspect 454
-docker inspect -f '{{.NetworkSettings.Networks.none.IPAddress}} {{.NetworkSettings.Networks.null.MacAddress}}' web-server
+docker inspect web-server
 ```
 
-*Description:*
-- Provides an isolated environment where containers can't communicate.
-- Useful for scenarios requiring complete network isolation.
+### Description:
 
-**6. Overlay Driver Example:**
+* Container has **no network interfaces** except loopback.
+* Best for **fully isolated** workloads (security, batch jobs, testing).
 
-```
+
+## 6. Overlay Network Driver
+
+Used for **multi-host networking** in Docker Swarm clusters.
+
+### Example:
+
+```bash
 docker network create --driver=overlay my_overlay_network
+
 docker service create --network=my_overlay_network my_service
 ```
 
-*Description:*
-- Enables multi-host networking in Docker Swarm.
-- Uses overlay networks for communication across different hosts.
+### Description:
+
+* Enables communication **across multiple Docker hosts**.
+* Uses VXLAN encapsulation.
+* Designed for **Swarm Mode** services.
+
+
+# ✅ Summary Table
+
+| Driver      | Scope          | Use Case                                    |
+| ----------- | -------------- | ------------------------------------------- |
+| **bridge**  | Single host    | Default local container networking          |
+| **host**    | Single host    | High-performance networking, no isolation   |
+| **ipvlan**  | Underlay L2/L3 | Direct connection to physical network       |
+| **macvlan** | Physical LAN   | Each container appears as a physical device |
+| **none**    | Isolated       | No networking required                      |
+| **overlay** | Multi-host     | Docker Swarm cluster networking             |
+
+---
+
+
 
 
 ## Building Multi Container Application with Docker
