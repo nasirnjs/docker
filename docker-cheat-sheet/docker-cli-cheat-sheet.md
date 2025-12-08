@@ -701,20 +701,67 @@ Host folder `/home/nasir/bind-mount` becomes `/usr/share/nginx/html` inside cont
 
 ## Docker Namespace
 
-Docker namespaces are a key feature of containerization that provide process isolation and resource abstraction, allowing multiple containers to run on the same host without interfering with each other. 
+Docker namespaces provide **process isolation and resource abstraction**, allowing multiple containers to run on the same host without interfering with each other.
 
-PID (Process ID) Namespace:
-To check the PID (Process ID) Namespace of a running Docker container, you can use the docker inspect command.
-Here's an example:
-```
+## 1. PID (Process ID) Namespace
+
+**Purpose:** Isolates process IDs so each container has its own process tree.
+
+**Example:**
+
+```bash
+# Run a container
 docker run -d --name=web nginx
+
+# Get the container's PID on the host
 docker inspect --format '{{.State.Pid}}' web
+
+# Enter the container's PID namespace (replace <PID> with actual PID)
+nsenter -t <PID> -p bash
 ```
-Network Namespace:
-Let's use the example command you provided to check the PID and Network Namespace of the running Docker container.
-```
+## 2. Network Namespace
+
+**Purpose:** Provides each container with its own network stack (interfaces, IPs, routing tables).
+
+**Example:**
+
+```bash
+# Get the container's network namespace
 docker inspect --format '{{.NetworkSettings.SandboxKey}}' web
+
+# Example output: /var/run/docker/netns/6f3a5b2f1d0e
+
+# Inspect network interfaces in the container's namespace
+ip netns exec 6f3a5b2f1d0e ip addr
 ```
+## 3. Mount Namespace
+
+**Purpose:** Isolates filesystem mounts. Each container can have a different view of the filesystem.
+
+## 4. UTS Namespace
+
+**Purpose:** Isolates hostname and domain name. Containers can have unique hostnames.
+
+## 5. IPC Namespace
+
+**Purpose:** Isolates inter-process communication (shared memory, semaphores, message queues).
+
+## 6. User Namespace
+
+**Purpose:** Maps container user IDs to host user IDs, enhancing security.
+
+
+### ✅ Summary
+
+* **PID Namespace:** isolates processes
+* **Network Namespace:** isolates networking
+* **Mount Namespace:** isolates filesystem
+* **UTS Namespace:** isolates hostname/domain
+* **IPC Namespace:** isolates inter-process communication
+* **User Namespace:** isolates user IDs
+
+Use `docker inspect` to query namespace details for any running container.
+
 
 
 ## Docker Cgroups
