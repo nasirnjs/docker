@@ -6,7 +6,7 @@
 A full-stack React + Node.js + MongoDB application deployed using Docker.
 
 
-## Step-by-Step Deployment Guide
+## Step by Step Deployment Guide
 
 ### Launch EC2 Instance
 1. Create an EC2 instance using **Ubuntu 22.04 (t3.micro)**.  

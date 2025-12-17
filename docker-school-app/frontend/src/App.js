@@ -18,8 +18,6 @@ const apm = initApm({
 })
 
 
-
-
 function App() {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
