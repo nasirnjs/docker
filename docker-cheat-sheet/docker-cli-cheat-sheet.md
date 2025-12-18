@@ -5,6 +5,8 @@
 - [Managing Docker Services and Sockets with Systemd](#managing-docker-services-and-sockets-with-systemd)
 - [The lifecycle of a Docker container](#the-lifecycle-of-a-docker-container)
 - [Why a Docker container exits!!!](#why-a-docker-container-exits)
+  - [Container Management](#container-management)
+  - [Build Docker Images](#build-docker-images)
 - [Authenticating to Registries](#authenticating-to-registries)
 - [Docker Image Management](#docker-image-management)
 - [Docker Image Layer](#docker-image-layer)
@@ -215,7 +217,7 @@ docker run busybox sleep 3600
 ```
 
 ---
-🐳 ## Container Management
+## Container Management
 
 Run a container from an image.
 ```
@@ -231,7 +233,7 @@ docker restart -t 30 6d144a1d546b
 docker inspect --format='{{.Id}}' nginx
 ```
 
-🐳 ## Build Docker Images
+## Build Docker Images
 
 **What is a Docker Image?**
 A Docker image is a read-only template that contains a set of instructions for creating a container that can run on the Docker platform.
