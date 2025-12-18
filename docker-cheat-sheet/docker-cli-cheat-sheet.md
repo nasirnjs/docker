@@ -37,6 +37,10 @@
   - [Null (none) Network Driver](#null-none-network-driver)
   - [Overlay Network Driver](#overlay-network-driver)
 - [Building Multi Container Application with Docker, Dockercompose](#building-multi-container-application-with-docker-dockercompose)
+- [Docker Security \& Hardening](#docker-security--hardening)
+  - [Docker Security Threat Model](#docker-security-threat-model)
+    - [Container escape](#container-escape)
+    - [Secure Dockerfile (Non‑Root User)](#secure-dockerfile-nonroot-user)
 - [Container Cleanup: Complete Reference](#container-cleanup-complete-reference)
   - [Container Operations](#container-operations)
   - [Image Cleanup](#image-cleanup)
@@ -1132,6 +1136,72 @@ docker compose up -d
 ```
 ```bash
 docker compose logs -f
+```
+
+# Docker Security & Hardening
+
+## Docker Security Threat Model
+**Why it matters** Containers share the host kernel, so a misconfigured container can compromise the host or other containers. Hardening prevents container-level compromise from affecting the host or other services. Common threats:
+
+| Threat               | Description                               | Example                                                     | STRIDE Category       | Mitigation / Best Practice                                           |
+|----------------------|-------------------------------------------|-------------------------------------------------------------|---------------------|---------------------------------------------------------------------|
+| Container escape     | Exploit allows access to host              | Privileged container accessing `/var/run/docker.sock`       | Elevation of Privilege | Avoid `--privileged`; use minimal permissions; enable seccomp & AppArmor profiles |
+| Privilege escalation | Root in container → root on host           | Running container as root with `--privileged`               | Elevation of Privilege | Run as non-root user; drop unnecessary capabilities; use PodSecurityContext |
+| Malicious images     | Images with malware or embedded secrets   | Pulling unknown or unverified images from Docker Hub        | Tampering / Spoofing | Use trusted registries; scan images with tools like Trivy or Clair; sign images |
+| Data exfiltration    | Container sends sensitive data externally | Sensitive logs or credentials leaving the host/network      | Information Disclosure | Network policies (K8s NetworkPolicy); secrets management; avoid hardcoding secrets |
+| Resource abuse       | Container consumes all CPU or memory      | Denial-of-service via unbounded resource usage              | Denial of Service    | Set resource requests & limits in Kubernetes; use quotas and cgroups |
+
+### Container escape
+**Container escape** Start a container with access to host Docker daemon.
+```
+docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock docker:latest sh
+```
+**From inside that container, run Nginx on the host**
+```
+docker run -d --name hacked-nginx -p 8080:80 nginx:latest
+```
+Verify on the host or Open in browser *http://<HOST-IP>:8080*
+```
+docekr ps
+```
+
+### Secure Dockerfile (Non‑Root User)
+
+Application and Requirements file add from [Here](https://github.com/nasirnjs/docker/blob/main/docker-cheat-sheet/docker-cli-cheat-sheet.md#build-docker-images)
+```yaml
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
+
+# Environment variable for unbuffered logs
+ENV PYTHONUNBUFFERED=1
+
+# Set working directory
+WORKDIR /app
+
+# Create a non-root user
+RUN useradd -m -u 1000 appuser
+
+# Copy requirements first (better layer caching)
+COPY requirements.txt /app/
+
+# Install dependencies (still runs as root — OK at build time)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . /app
+
+# Change ownership of app directory
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose application port
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "app.py"]
+
 ```
 
 
