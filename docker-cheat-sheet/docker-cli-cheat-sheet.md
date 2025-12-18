@@ -919,7 +919,7 @@ docker info
 
 ## Bridge Network Driver
 
-**Default network driver** for single-host container communication.
+**Bridge Network Driver** is the default Docker network driver, commonly used for single-host applications, Docker Compose projects, and microservices running on one VM or server, enabling container-to-container communication on the same host while maintaining isolation from the host network.
 
 **Example:**
 
@@ -943,7 +943,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web
 
 ## Host Network Driver
 
-**Uses host network directly** (no isolation).
+**Host Network Driver** uses the host’s network stack directly, providing maximum performance by allowing applications to bind directly to host ports with no port mapping required.
 
 **Example:**
 
@@ -959,7 +959,7 @@ docker run --network=host -d --name=web-server nginx
 
 ## IPvlan Network Driver
 
-Allows containers to connect directly to the **underlay network** with unique IP addresses.
+**IPvlan Network Driver** allows containers to connect directly to the underlay network with unique IP addresses from an existing Layer 2 or Layer 3 network, reducing MAC address usage by sharing the host MAC, and is commonly used for advanced network segmentation in enterprise environments.
 
 **Example:**
 
@@ -987,7 +987,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web
 
 ## Macvlan Network Driver
 
-Gives containers their **own MAC address** on the physical network.
+**Macvlan Network Driver** gives containers their own MAC address and IP on the physical network, allowing direct LAN access without NAT; it is commonly used for legacy applications that expect real IPs, with containers connected directly to the physical NIC.
 
 **Example:**
 
@@ -1014,7 +1014,7 @@ docker inspect -f '{{.NetworkSettings.Networks.my_macvlan_network.IPAddress}} {{
 
 ## Null (none) Network Driver
 
-Provides **no network connectivity**.
+Provides **no network connectivity** No network connectivity, completely disabling networking to ensure maximum isolation. it is used for batch jobs that do not require network access and security-sensitive workloads, where the container has no network interfaces except loopback.
 
 **Example:**
 
@@ -1033,7 +1033,7 @@ docker inspect web-server
 
 ## Overlay Network Driver
 
-Used for **multi-host networking** in Docker Swarm clusters.
+Used for **multi-host networking** in Docker Swarm clusters. Used for multi-host networking, enabling containers to communicate across multiple Docker hosts in Docker Swarm clusters.
 
 **Example:**
 
