@@ -43,6 +43,7 @@
     - [Secure Dockerfile (Non‑Root User)](#secure-dockerfile-nonroot-user)
     - [🚫 Don’t Pull Untrusted Container Images](#-dont-pull-untrusted-container-images)
     - [🔐 Data Exfiltration Risk in Containers](#-data-exfiltration-risk-in-containers)
+    - [⚙️ Resource Abuse in Containers](#️-resource-abuse-in-containers)
   - [🐳 Docker Container Management Commands](#-docker-container-management-commands)
   - [Image Cleanup](#image-cleanup)
   - [Volume Cleanup](#volume-cleanup)
@@ -1210,11 +1211,11 @@ CMD ["python", "app.py"]
 To reduce the risk of **malware, backdoors, and embedded secrets**, always follow these container image security best practices:
 
 ✅ Use Trusted Image Sources
-- **Docker Official Images**
-- **Google Artifact Registry (GAR)**
-- **AWS Elastic Container Registry (ECR)**
-- **Harbor (Self-Hosted Registry)**
-- **Avoid pulling images from unknown or unverified Docker Hub users.**
+- Docker Official Images**
+- Google Artifact Registry (GAR)
+- AWS Elastic Container Registry (ECR)
+- Harbor (Self-Hosted Registry)
+- Avoid pulling images from unknown or unverified Docker Hub users.
 
 🔍 Scan Images Before Use
 - Scan all container images for vulnerabilities and secrets using **Trivy**
@@ -1243,6 +1244,24 @@ trivy image --severity HIGH,CRITICAL myimage:tag
 - Restrict Network Access
 - Use Docker custon Network Driver
 - Allow containers to communicate only with required services
+
+### ⚙️ Resource Abuse in Containers
+⚠️ Threat Description
+- A container may consume **excessive CPU or memory**
+- Unbounded resource usage can:
+  - Starve other containers
+  - Degrade node performance
+  - Crash applications or nodes
+
+🧨 Impact
+- Denial of Service (DoS)
+- Application instability
+- Cluster-wide performance issues
+
+🛡 Mitigation Strategies
+- Set Resource Requests & Limits 
+- Docker and container runtimes use cgroups to enforce CPU and memory limits
+- Prevents containers from exceeding allocated resources
 
 ## 🐳 Docker Container Management Commands
 
