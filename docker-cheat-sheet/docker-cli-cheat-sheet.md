@@ -41,8 +41,8 @@
   - [Docker Security Threat Model](#docker-security-threat-model)
     - [Container escape](#container-escape)
     - [Secure Dockerfile (Non‑Root User)](#secure-dockerfile-nonroot-user)
-- [Container Cleanup: Complete Reference](#container-cleanup-complete-reference)
-  - [Container Operations](#container-operations)
+    - [🚫 Don’t Pull Untrusted Container Images](#-dont-pull-untrusted-container-images)
+    - [🔐 Data Exfiltration Risk in Containers](#-data-exfiltration-risk-in-containers)
   - [Image Cleanup](#image-cleanup)
   - [Volume Cleanup](#volume-cleanup)
   - [Network Cleanup](#network-cleanup)
@@ -1204,10 +1204,46 @@ CMD ["python", "app.py"]
 
 ```
 
+### 🚫 Don’t Pull Untrusted Container Images
 
-# Container Cleanup: Complete Reference
+To reduce the risk of **malware, backdoors, and embedded secrets**, always follow these container image security best practices:
 
-## Container Operations
+✅ Use Trusted Image Sources
+- **Docker Official Images**
+- **Google Artifact Registry (GAR)**
+- **AWS Elastic Container Registry (ECR)**
+- **Harbor (Self-Hosted Registry)**
+
+> Avoid pulling images from unknown or unverified Docker Hub users.
+
+🔍 Scan Images Before Use
+- Scan all container images for vulnerabilities and secrets using **Trivy**
+```bash
+sudo apt install trivy
+trivy image --severity HIGH,CRITICAL myimage:tag
+```
+
+### 🔐 Data Exfiltration Risk in Containers
+
+⚠️ Threat Description
+- Containers may send **sensitive data** to external systems
+- Risks include leakage of:
+  - Application logs
+  - API keys and credentials
+  - Environment variables
+  - Customer or system data
+
+🧨 Impact
+- **Information Disclosure**
+- Loss of sensitive or confidential data
+- Potential compliance and security violations
+
+🛡 Mitigation Strategies
+- Restrict Network Access
+- Use Docker custon Network Driver
+- Allow containers to communicate only with required services
+
+
 ```bash
 # List containers
 docker ps                          # Running containers only
