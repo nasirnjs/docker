@@ -43,6 +43,7 @@
     - [Secure Dockerfile (Non‑Root User)](#secure-dockerfile-nonroot-user)
     - [🚫 Don’t Pull Untrusted Container Images](#-dont-pull-untrusted-container-images)
     - [🔐 Data Exfiltration Risk in Containers](#-data-exfiltration-risk-in-containers)
+  - [🐳 Docker Container Management Commands](#-docker-container-management-commands)
   - [Image Cleanup](#image-cleanup)
   - [Volume Cleanup](#volume-cleanup)
   - [Network Cleanup](#network-cleanup)
@@ -1213,13 +1214,13 @@ To reduce the risk of **malware, backdoors, and embedded secrets**, always follo
 - **Google Artifact Registry (GAR)**
 - **AWS Elastic Container Registry (ECR)**
 - **Harbor (Self-Hosted Registry)**
-
-> Avoid pulling images from unknown or unverified Docker Hub users.
+- **Avoid pulling images from unknown or unverified Docker Hub users.**
 
 🔍 Scan Images Before Use
 - Scan all container images for vulnerabilities and secrets using **Trivy**
 ```bash
 sudo apt install trivy
+
 trivy image --severity HIGH,CRITICAL myimage:tag
 ```
 
@@ -1234,7 +1235,7 @@ trivy image --severity HIGH,CRITICAL myimage:tag
   - Customer or system data
 
 🧨 Impact
-- **Information Disclosure**
+- Information Disclosure
 - Loss of sensitive or confidential data
 - Potential compliance and security violations
 
@@ -1243,6 +1244,7 @@ trivy image --severity HIGH,CRITICAL myimage:tag
 - Use Docker custon Network Driver
 - Allow containers to communicate only with required services
 
+## 🐳 Docker Container Management Commands
 
 ```bash
 # List containers
