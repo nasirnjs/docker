@@ -59,7 +59,9 @@
   - [Docker Swarm Cluster Setup](#docker-swarm-cluster-setup)
   - [Docker Swarm Visualizer](#docker-swarm-visualizer)
   - [Service With Resource Limits](#service-with-resource-limits)
+  - [Update Image with Rolling Update Control](#update-image-with-rolling-update-control)
   - [Service With Placement Constraints](#service-with-placement-constraints)
+  - [Service Update \& Rollback](#service-update--rollback)
   - [Service With Custom Networks](#service-with-custom-networks)
 
 # Containerization vs Virtualization
@@ -1622,12 +1624,23 @@ sudo docker service create \
   nginx:latest
 ```
 
+## Update Image with Rolling Update Control
+```bash
+sudo docker service update --image nginx:1.27 --update-parallelism 1 --update-delay 10s --update-order start-first limited-resources
+```
+**Rollback if Something Goes Wrong**
+```
+sudo docker service rollback web-service
+sudo docker service inspect limited-resources --pretty
+```
 ## Service With Placement Constraints
 Run a service only on specific worker nodes
 ```bash
 sudo docker service create   --name worker-only-service2   --replicas 3   --constraint 'node.hostname == worker-2'   nginx:latest
-
 ```
+
+## Service Update & Rollback
+
 
 ## Service With Custom Networks
 Create a service attached to a user-defined overlay network:
