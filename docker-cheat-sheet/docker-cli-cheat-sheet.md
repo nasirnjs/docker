@@ -52,10 +52,12 @@
   - [Selective Cleanup](#selective-cleanup)
   - [By Age/Date](#by-agedate)
   - [Exit Code Based Cleanup](#exit-code-based-cleanup)
-  - [Docker Swarm](#docker-swarm)
-    - [Core Components](#core-components)
+- [Docker Swarm](#docker-swarm)
+  - [Core Components](#core-components)
   - [Kubernetes VS Docker Swarm](#kubernetes-vs-docker-swarm)
-    - [](#)
+  - [How Does Docker Swarm Work?](#how-does-docker-swarm-work)
+  - [Docker Swarm Cluster Setup](#docker-swarm-cluster-setup)
+  - [Docker Swarm Visualizer](#docker-swarm-visualizer)
 
 # Containerization vs Virtualization
 
@@ -1392,7 +1394,7 @@ docker rm $(docker ps -aq -f status=exited -f "exited!=0")
 docker rm $(docker ps -aq -f status=exited -f "exited=137")  # SIGKILL
 ```
 
-## Docker Swarm
+# Docker Swarm
 
 Docker Swarm is Docker’s built-in container orchestration and clustering solution. It lets you manage multiple Docker hosts as one logical cluster and deploy containers as services.
 
@@ -1401,7 +1403,7 @@ Docker Swarm turns a group of Docker nodes into a Swarm cluster where:
 - Other nodes act as workers
 - Applications run as services, not standalone containers
 
-### Core Components
+## Core Components
 
 **Manager Nodes**
 - Maintain the **cluster state**
@@ -1444,4 +1446,159 @@ Modern businesses are relying on containerization technologies to simplify the p
 | **Popularity**          | Widely adopted by enterprises and cloud providers. | Gaining popularity, but not as widely adopted as Kubernetes. |
 | **Ecosystem**           | Rich ecosystem with extensive tools and integrations. | Growing ecosystem with fewer tools and integrations compared to Kubernetes. |
 
-### 
+## How Does Docker Swarm Work?
+
+Docker Swarm works by orchestrating a cluster of Docker hosts, enabling users to deploy and manage containerized applications across multiple nodes seamlessly. Here's an overview of how Docker Swarm operates:
+
+1. Initialization: To create a Docker Swarm cluster, one of the Docker hosts is designated as the manager node. This node initializes the Swarm, forming the control plane responsible for managing the cluster.
+
+2. Joining Nodes: Additional Docker hosts can join the Swarm as either manager or worker nodes. Manager nodes handle cluster management tasks, while worker nodes execute the containerized applications.
+
+3. Service Deployment: Users define services, which represent containerized applications along with their configurations and desired states. These services are deployed to the Swarm using Docker commands or Docker Compose files.
+
+4. Task Scheduling: The manager node schedules tasks, which represent individual instances of services, across the worker nodes in the Swarm. Tasks are distributed based on resource availability and constraints specified by the user.
+
+5. Load Balancing: Docker Swarm includes built-in load balancing mechanisms to evenly distribute incoming traffic among the tasks running on different nodes. This ensures optimal utilization of resources and high availability of applications.
+
+6. Scaling: Users can scale services horizontally by adjusting the number of replicas, which determines the number of tasks running for a particular service. Docker Swarm automatically distributes these tasks across available nodes.
+
+7. Health Monitoring: Docker Swarm continuously monitors the health of services and individual tasks within the cluster. If a task or node becomes unhealthy, Docker Swarm takes corrective actions, such as restarting tasks or rescheduling them to healthy nodes.
+
+8. Networking: Docker Swarm provides networking features that enable communication between containers running on different nodes in the cluster. This allows for seamless interaction between services and ensures connectivity within the application architecture.
+
+9. Security: Docker Swarm offers security features such as mutual TLS authentication, encryption of network traffic, and role-based access control (RBAC) to protect the cluster and its resources from unauthorized access and malicious activities.
+
+<p align="center">
+  <img src="./image/docker-swarm-architecture.png" alt="Docker Swarm Architecture" width="600" height="400"/>
+</p>
+
+
+## Docker Swarm Cluster Setup
+
+Setting up your first Docker Swarm Demo can indeed be a rewarding experience, showcasing the capabilities of containerized applications. To help you get started, here are the steps to set up your first Docker Swarm Demo.
+
+**Basic Prerequisites for Setting Up Docker Swarm**
+
+1. Docker Installed: Ensure Docker Engine is installed on all nodes.
+2. Multiple Nodes: Need multiple machines for the Swarm cluster.
+3. Network Connectivity: Nodes must communicate with each other.
+4. Static IPs or Hostnames: Nodes need identifiable addresses.
+5. Open Ports: Ports 2377, 7946, and 4789 should be open.
+6. Consistent Docker Versions: Use the same Docker version on all nodes.
+7. Sufficient Resources: Nodes should have enough CPU, memory, and disk space.
+
+**Install Docker from [Here](https://docs.docker.com/engine/install/ubuntu/)**
+
+**Initializing a Swarm [Reference](https://docs.docker.com/engine/swarm/)**
+
+Install Docker
+```bash
+curl -fsSL https://get.docker.com | sh
+```
+
+Initialize Swarm with specific address.
+```bash
+docker swarm init --advertise-addr <MANAGER-IP>
+```
+
+Generate tocken for node join as manager.
+```bash
+docker swarm join-token worker
+```
+Print manager Token if you want multi master
+```bash
+docker swarm join-token manager
+```
+List Nodes list
+```bash
+docker node ls
+```
+Cluster info with there IP Address
+```bash
+docker node ls -q | xargs docker node inspect --format "table {{.Description.Hostname}}\t{{.Status.Addr}}\t{{.Spec.Role}}\t{{.ManagerStatus}}"
+```
+Remove Node from Swarm
+```bash
+docker node rm <NODE-ID>
+```
+Node Leaving the Cluster (Run on that node)
+```bash
+docker swarm leave
+```
+
+Drain a Node (Graceful Maintenance Mode)
+```bash
+sudo docker node update --availability=drain worker-2
+```
+
+Activate a Node
+```bash
+sudo docker node update --availability=active worker-2
+```
+
+## Docker Swarm Visualizer
+
+Docker Swarm Visualizer is a tool that provides a visual representation of your Docker Swarm cluster. It shows you the status of your services, containers, and nodes in the cluster in a graphical interface. This visualization can be helpful for understanding the layout of your swarm, identifying any issues, and monitoring the health of your containers and services.
+
+Run Docker Swarm Visualizer
+```bash
+docker service create \
+  --name=viz \
+  --publish=8080:8080/tcp \
+  --constraint=node.role==manager \
+  --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+  dockersamples/visualizer
+```
+
+Now browse your Swarm manager IP with Port.
+```bash
+http://172.17.18.200:8080
+```
+**Deploy an Nginx Service in Docker Swarm.**
+```bash
+docker service create \
+  --name nginx-service \
+  --publish published=80,target=80 \
+  --replicas 3 \
+  nginx:latest
+```
+
+**Using a Stack File (nginx-svc.yaml)**
+```bash
+vim nginx-svc.yaml
+```
+
+```bash
+services:
+  nginx:
+    image: nginx:latest
+    deploy:
+      replicas: 2
+    ports:
+      - "8080:80"
+```
+
+```bash
+docker stack deploy -c nginx-svc.yaml nginx-stack
+```
+
+Scale services dynamically
+```bash
+docker service scale nginx-service=5
+```
+
+Check service status
+```bash
+docker service ls
+docker service ps nginx-service
+```
+
+View logs of a service.
+```bash
+docker service logs -f nginx-service
+```
+
+Remove the Visualizer Service.
+```bash
+docker service rm viz
+```
