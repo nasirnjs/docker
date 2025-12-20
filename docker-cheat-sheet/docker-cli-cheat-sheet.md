@@ -52,6 +52,10 @@
   - [Selective Cleanup](#selective-cleanup)
   - [By Age/Date](#by-agedate)
   - [Exit Code Based Cleanup](#exit-code-based-cleanup)
+  - [Docker Swarm](#docker-swarm)
+    - [Core Components](#core-components)
+  - [Kubernetes VS Docker Swarm](#kubernetes-vs-docker-swarm)
+    - [](#)
 
 # Containerization vs Virtualization
 
@@ -1387,3 +1391,57 @@ docker rm $(docker ps -aq -f status=exited -f "exited!=0")
 # Remove containers with specific exit code
 docker rm $(docker ps -aq -f status=exited -f "exited=137")  # SIGKILL
 ```
+
+## Docker Swarm
+
+Docker Swarm is Docker’s built-in container orchestration and clustering solution. It lets you manage multiple Docker hosts as one logical cluster and deploy containers as services.
+
+Docker Swarm turns a group of Docker nodes into a Swarm cluster where:
+- One or more nodes act as managers
+- Other nodes act as workers
+- Applications run as services, not standalone containers
+
+### Core Components
+
+**Manager Nodes**
+- Maintain the **cluster state**
+- **Schedule tasks** to worker nodes
+- Use **Raft consensus** to ensure consistency and fault tolerance
+- Handle:
+  - Service orchestration
+  - Leader election
+  - Cluster membership
+
+*⚠️ Best practice: use an **odd number of manager nodes** (3 or 5) for high availability.*
+
+**Worker Nodes**
+- **Run containers** (tasks) assigned by manager nodes
+- Execute workloads only
+- **Do not participate in decision-making**
+- Can be **promoted or demoted** to/from manager roles if required
+
+## Kubernetes VS Docker Swarm
+
+Modern businesses are relying on containerization technologies to simplify the process of deploying and managing complex applications.Here's a comparison between Kubernetes and Docker Swarm.
+
+<p align="center">
+  <img src="./image/docker-swram-k8s.png" alt="Docker swram vs K8s" width="500" height="300"/>
+</p>
+
+| Feature                 | Kubernetes                                     | Docker Swarm                                      |
+|-------------------------|------------------------------------------------|---------------------------------------------------|
+| **Orchestration**       | Advanced orchestration capabilities.           | Simplified orchestration.                         |
+| **Scaling**             | Horizontal and vertical scaling of containers.  | Horizontal scaling of services.                   |
+| **High Availability**   | Built-in high availability features.           | High availability with automatic failover.        |
+| **Networking**          | Advanced networking features.                  | Basic networking with overlay networks.           |
+| **Load Balancing**      | Robust built-in load balancing.                | Basic load balancing capabilities.                |
+| **Service Discovery**   | Integrated service discovery mechanisms.       | Service discovery using DNS or user-defined names.|
+| **Storage Orchestration** | Support for persistent storage.              | Limited support for storage orchestration.        |
+| **Security**            | Rich set of security features and policies.    | Basic security features with TLS encryption.      |
+| **Community Support**   | Large and active community.                    | Active community support but smaller than Kubernetes.|
+| **Ease of Use**         | Steeper learning curve, more complex setup.    | Simpler setup and easier to get started with.      |
+| **Resource Utilization** | Efficient resource utilization.                | Efficient resource utilization.                   |
+| **Popularity**          | Widely adopted by enterprises and cloud providers. | Gaining popularity, but not as widely adopted as Kubernetes. |
+| **Ecosystem**           | Rich ecosystem with extensive tools and integrations. | Growing ecosystem with fewer tools and integrations compared to Kubernetes. |
+
+### 
