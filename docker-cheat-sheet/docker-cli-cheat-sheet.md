@@ -58,6 +58,9 @@
   - [How Does Docker Swarm Work?](#how-does-docker-swarm-work)
   - [Docker Swarm Cluster Setup](#docker-swarm-cluster-setup)
   - [Docker Swarm Visualizer](#docker-swarm-visualizer)
+  - [Service With Resource Limits](#service-with-resource-limits)
+  - [Service With Placement Constraints](#service-with-placement-constraints)
+  - [Service With Custom Networks](#service-with-custom-networks)
 
 # Containerization vs Virtualization
 
@@ -1535,6 +1538,10 @@ Activate a Node
 ```bash
 sudo docker node update --availability=active worker-2
 ```
+Deploy a sample service
+```bash
+docker service create --name my_web --replicas 3 --publish 8090:80 nginx
+```
 
 ## Docker Swarm Visualizer
 
@@ -1579,26 +1586,63 @@ services:
 ```
 
 ```bash
-docker stack deploy -c nginx-svc.yaml nginx-stack
+sudo docker stack deploy -c nginx-svc.yaml nginx-stack
 ```
 
 Scale services dynamically
 ```bash
-docker service scale nginx-service=5
+sudo docker service scale nginx-service=5
 ```
 
 Check service status
 ```bash
-docker service ls
-docker service ps nginx-service
+sudo docker service ls
+sudo docker service ps nginx-service
+sudo docker service rm service-name 
 ```
 
 View logs of a service.
 ```bash
-docker service logs -f nginx-service
+sudo docker service logs -f nginx-service
 ```
 
 Remove the Visualizer Service.
 ```bash
-docker service rm viz
+sudo docker service rm viz
+```
+
+## Service With Resource Limits
+Limit CPU and memory for a service.
+```bash
+sudo docker service create \
+  --name limited-resources \
+  --replicas 2 \
+  --limit-cpu 0.5 \
+  --limit-memory 512M \
+  nginx:latest
+```
+
+## Service With Placement Constraints
+Run a service only on specific worker nodes
+```bash
+sudo docker service create   --name worker-only-service2   --replicas 3   --constraint 'node.hostname == worker-2'   nginx:latest
+
+```
+
+## Service With Custom Networks
+Create a service attached to a user-defined overlay network:
+```bash
+sudo docker network create --driver overlay my-net
+```
+```bash
+sudo docker service create \
+  --name web-service \
+  --replicas 2 \
+  --network my-net \
+  nginx:latest
+```
+```bash
+sudo docker network ls
+sudo docker network inspect my-net
+sudo docker network inspect my-net -f '{{range .Containers}}{{.Name}} - {{.IPv4Address}}{{"\n"}}{{end}}'
 ```
