@@ -1,5 +1,5 @@
 # Use OpenJDK as the base image for building
-FROM openjdk:17 AS builder
+FROM ibm-semeru-runtimes:open-17-jdk AS builder
 
 # Set working directory
 WORKDIR /app
@@ -19,7 +19,7 @@ COPY src ./src
 RUN ./mvnw package -DskipTests
 
 # Use OpenJDK as the base image for running the application
-FROM openjdk:17
+FROM ibm-semeru-runtimes:open-17-jdk
 
 # Set working directory
 WORKDIR /app
