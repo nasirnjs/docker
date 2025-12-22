@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'docker-swarm'
+    static_configs:
+      - targets: ['172.17.18.220:9100', '172.17.18.221:9100', '172.17.18.222:9100']  # Node exporters
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['172.17.18.220:8080', '172.17.18.221:8080', '172.17.18.222:8080']  # cAdvisor service
