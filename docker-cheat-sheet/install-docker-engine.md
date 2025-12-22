@@ -1,9 +1,14 @@
 
-# 🚀How To Install and Use Docker on Ubuntu 22.04🚀
+# 🚀How To Install and Use Docker on Ubuntu 24.04🚀
 
 
+## Install Docker Using the Official Convenience Script
+Install Docker
+```bash
+curl -fsSL https://get.docker.com | sh
+```
 
-## Install Docker Engine on Ubuntu 22.04Lts [Reference](https://docs.docker.com/engine/install/ubuntu/)
+## Install Docker Engine on Ubuntu 24.04Lts [Reference](https://docs.docker.com/engine/install/ubuntu/)
 
 **Install using the apt repository**
 
@@ -11,27 +16,35 @@
    
 ```bash
 # Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
+sudo apt update
+sudo apt install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
 ```
 
 2. Install the Docker packages.
 
-`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+```bash
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
 
-3. Verify that the Docker Engine installation is successful by running the hello-world image.
+1. Verify that the Docker Engine installation is successful by running the hello-world image.
 
-`sudo docker run hello-world`
+```bash
+sudo docker run hello-world
+```
 
 **Manage Docker as a non-root user**
 
@@ -40,15 +53,19 @@ If you don't want to preface the docker command with sudo add user to docker gro
 
 1. Add your user to the docker group.
 
-`sudo usermod -aG docker $USER`
+```bash
+sudo usermod -aG docker $USER
+```
 
 2. Starts a new shell with the updated group memberships without requiring a logout.
 
-`newgrp docker`
+```bash
+newgrp docker
+```
 
 **Configure Docker to start on boot with systemd and disable**
 
-```
+```bash
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
@@ -60,11 +77,13 @@ sudo systemctl disable containerd.service
 
 1. Uninstall the Docker Engine, CLI, containerd, and Docker Compose packages
 
-`sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras`
+```bash
+sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+```
 
 2. Images, containers, volumes, or custom configuration files on your host aren't automatically removed. To delete all images, containers, and volumes.
 
-```
+```bash
 sudo rm -rf /var/lib/docker
 sudo rm -rf /var/lib/containerd
 ```
