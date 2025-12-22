@@ -8,17 +8,17 @@ Make monitoring directory and keep scrape and stack both both file in same direc
 ```
 **Before apply update IP of your Cluster in scrape.yaml file**
 
-First create a network.\
+First create a network.
 ```bash
 docker network create --driver=overlay monitoring
 ```
 
-Then run Stack.\
+Then run Stack.
 ```bash
 docker stack deploy -c prometheus-stack.yaml promethous
 ```
 
-To update specific Server.\
+To update specific Server.
 ```bash
 docker service update --force promethous_grafana
 ```
