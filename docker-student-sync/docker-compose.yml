@@ -31,6 +31,8 @@ services:
   frontend:
     build:
       context: ./student-fe
+      args:
+        BACKEND_URL: ${BACKEND_URL:-http://localhost:8080/}
     container_name: frontend
     restart: always
     ports:
